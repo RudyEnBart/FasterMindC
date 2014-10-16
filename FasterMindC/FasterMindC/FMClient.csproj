@@ -52,6 +52,9 @@
     </Compile>
     <Compile Include="FM_Client_Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FM_Client_GUI.resx">
+      <DependentUpon>FM_Client_GUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
