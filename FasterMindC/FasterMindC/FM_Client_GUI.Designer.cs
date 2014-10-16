@@ -1,6 +1,6 @@
 ﻿namespace FasterMindC
 {
-    partial class Form1
+    partial class FM_Client_GUI
     {
         /// <summary>
         /// Required designer variable.

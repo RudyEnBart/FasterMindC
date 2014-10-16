@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace FasterMindC
+namespace Server
 {
-    static class Program
+    static class FM_Server
     {
         /// <summary>
         /// The main entry point for the application.
@@ -14,9 +14,7 @@ namespace FasterMindC
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
         }
     }
 }
