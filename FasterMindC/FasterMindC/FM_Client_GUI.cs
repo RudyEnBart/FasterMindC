@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FMNetworkLibrary;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,7 +13,8 @@ namespace FasterMindC
 {
     public partial class FM_Client_GUI : Form
     {
-        FM_Client_Controller _controller;
+        private Dictionary<ENUMS.color, Color> _colorDict;
+        private FM_Client_Controller _controller;
         public FM_Client_GUI(FM_Client_Controller controller)
         {
             this._controller = controller;
@@ -33,6 +35,7 @@ namespace FasterMindC
         private void InputCode1Clicked(object sender, EventArgs e)
         {
             _controller.InputCodeClicked(sender, e, 1);
+            _inputCode1.BackColor = ENUMS.color.BLUE;
         }
 
         private void InputCode2Clicked(object sender, EventArgs e)

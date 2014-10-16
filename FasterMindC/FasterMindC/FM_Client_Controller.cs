@@ -146,13 +146,16 @@ namespace FasterMindC
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
         {
-            if ((_code / Math.Pow(1, p - 1)) == 6)
+            Console.WriteLine("The code is: " + _code);
+            if ((_code / Math.Pow(1, p - 1))%10 == 6)
             {
-
+                Console.WriteLine("The number to edit is too big, resetting");
             }
             else
             {
+                Console.WriteLine("The code has gone from: " + _code);
                 _code += (short)(Math.Pow(1, p - 1));
+                Console.Write(" to: " + _code);
             }
         }
     }
