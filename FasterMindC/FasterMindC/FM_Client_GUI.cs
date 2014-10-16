@@ -26,5 +26,10 @@ namespace FasterMindC
         {
 
         }
+
+        private void _code1_4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

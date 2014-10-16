@@ -1,27 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FMNetworkLibrary
+﻿namespace FMNetworkLibrary
 {
     public class FM_Packet
     {
+        public FM_Packet(string type, string message)
+        {
+            _type = type;
+            _message = message;
+        }
+
+        public FM_Packet(string id, string type, string message)
+        {
+            _id = id;
+            _type = type;
+            _message = message;
+        }
+
         public string _id { get; set; }
         public string _type { get; set; }
         public string _message { get; set; }
 
-        public FM_Packet(string id, string type, string message)
-        {
-            this._id = id;
-            this._type = type;
-            this._message = message;
-        }
-
         public string toString()
         {
-            return "ID: " + _id + " Type: " + _type + " \nMessage: " + _message; 
+            return "ID: " + _id + " Type: " + _type + " \nMessage: " + _message;
         }
     }
 }

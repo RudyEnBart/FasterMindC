@@ -151,9 +151,9 @@
             this.panel115 = new System.Windows.Forms.Panel();
             this.panel116 = new System.Windows.Forms.Panel();
             this.shapeContainer1 = new Microsoft.VisualBasic.PowerPacks.ShapeContainer();
-            this.lineShape1 = new Microsoft.VisualBasic.PowerPacks.LineShape();
-            this.lineShape2 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.lineShape3 = new Microsoft.VisualBasic.PowerPacks.LineShape();
+            this.lineShape2 = new Microsoft.VisualBasic.PowerPacks.LineShape();
+            this.lineShape1 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.SuspendLayout();
             // 
             // button1
@@ -203,6 +203,7 @@
             this._code1_4.Name = "_code1_4";
             this._code1_4.Size = new System.Drawing.Size(45, 44);
             this._code1_4.TabIndex = 5;
+            this._code1_4.Paint += new System.Windows.Forms.PaintEventHandler(this._code1_4_Paint);
             // 
             // _code2_4
             // 
@@ -1151,13 +1152,13 @@
             this.shapeContainer1.TabIndex = 145;
             this.shapeContainer1.TabStop = false;
             // 
-            // lineShape1
+            // lineShape3
             // 
-            this.lineShape1.Name = "lineShape1";
-            this.lineShape1.X1 = 16;
-            this.lineShape1.X2 = 357;
-            this.lineShape1.Y1 = 521;
-            this.lineShape1.Y2 = 521;
+            this.lineShape3.Name = "lineShape3";
+            this.lineShape3.X1 = 415;
+            this.lineShape3.X2 = 416;
+            this.lineShape3.Y1 = 10;
+            this.lineShape3.Y2 = 558;
             // 
             // lineShape2
             // 
@@ -1167,13 +1168,13 @@
             this.lineShape2.Y1 = 520;
             this.lineShape2.Y2 = 520;
             // 
-            // lineShape3
+            // lineShape1
             // 
-            this.lineShape3.Name = "lineShape3";
-            this.lineShape3.X1 = 415;
-            this.lineShape3.X2 = 416;
-            this.lineShape3.Y1 = 10;
-            this.lineShape3.Y2 = 558;
+            this.lineShape1.Name = "lineShape1";
+            this.lineShape1.X1 = 16;
+            this.lineShape1.X2 = 357;
+            this.lineShape1.Y1 = 521;
+            this.lineShape1.Y2 = 521;
             // 
             // FM_Client_GUI
             // 
