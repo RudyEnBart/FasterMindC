@@ -2,6 +2,10 @@
 {
     public class FM_Packet
     {
+        public FM_Packet()
+        {
+            
+        }
         public FM_Packet(string type, string message)
         {
             _type = type;
