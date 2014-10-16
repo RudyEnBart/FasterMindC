@@ -1,4 +1,6 @@
-﻿using FMNetworkLibrary;
+﻿using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+using FMNetworkLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +16,6 @@ namespace Server
 {
     class FM_Server
     {
-        private IPAddress _localIP = IPAddress.Parse("127.0.0.1");
-
         [STAThread]
         static void Main()
         {
@@ -24,49 +24,72 @@ namespace Server
 
         public FM_Server()
         {
-            TcpListener server = new TcpListener(_localIP, 11000);
-            server.Start();
-
-            TcpClient incomingClient;
-            Console.WriteLine("Waiting for connection...");
-            while (true)
+            TcpListener _server = null;
+            try
             {
-                incomingClient = server.AcceptTcpClient();
+                X509Certificate2 _certificate = new X509Certificate2("C:\\certs\\testpfx.pfx", "FIETSA3");
+                IPAddress _localIP = IPAddress.Parse("127.0.0.1");
+                Int32 _port = 666;
+                _server = new TcpListener(_localIP, _port);
+                _server.Start();
+                Console.WriteLine("Waiting for connection...");
 
-                new Thread(() =>
+                while (true)
                 {
-                    Console.WriteLine("Connection found!");
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    TcpClient sender = incomingClient;
-                    SslStream sslStream = new SslStream(incomingClient.GetStream());
-                    sslStream.AuthenticateAsServer(certificate);
 
-                    while (true)
+                    TcpClient _clientConnection = _server.AcceptTcpClient();
+
+                    new Thread(() =>
                     {
-                        String dataString = "";
-                        FM_Packet packet = null;
-                        if (sender.Connected)
+                        Console.WriteLine("Connection found!");
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        SslStream sslStream = new SslStream(_clientConnection.GetStream(), false);
+                        try
                         {
-                            dataString = (String)formatter.Deserialize(sslStream);
-                            //dataString = (String)formatter.Deserialize(sender.GetStream());
-                            packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
-
-                            //Console.WriteLine(dataString);
-
-                            //Console.WriteLine("Incoming action" + packet._type);
-                            switch (packet._type)
-                            {
-                                //sender = incoming client
-                                //packet = data van de client
-                                case "Chat":
-                                    HandleConnectPacket(packet);
-                                    break;
-                                default: //nothing
-                                    break;
-                            }
+                            sslStream.AuthenticateAsServer(_certificate, false, SslProtocols.Tls, false);
                         }
-                    } // end While
-                }).Start();
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Exception: {0}", e.Message);
+                            if (e.InnerException != null)
+                            {
+                                Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
+                            }
+                            Console.WriteLine("Authentication failed - closing the connection.");
+                            sslStream.Close();
+                            _clientConnection.Close();
+                            return;
+                        }
+                        while (true)
+                        {
+                            String dataString = "";
+                            FM_Packet packet = null;
+                            if (_clientConnection.Connected)
+                            {
+                                dataString = (String) formatter.Deserialize(sslStream);
+                                packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
+                                switch (packet._type)
+                                {
+                                        //sender = incoming client
+                                        //packet = data van de client
+                                    case "Connect":
+                                        HandleConnectPacket(packet);
+                                        break;
+                                    default: //nothing
+                                        break;
+                                }
+                            }
+                        } // end While
+                    }).Start();
+                }
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("SocketException: " + e);
+            }
+            finally
+            {
+                _server.Stop();
             }
 
         }
