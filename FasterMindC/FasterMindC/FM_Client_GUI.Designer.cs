@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.submitCodeButton = new System.Windows.Forms.Button();
+            this.nameBox = new System.Windows.Forms.TextBox();
             this._code1_1 = new System.Windows.Forms.Panel();
             this._code1_2 = new System.Windows.Forms.Panel();
             this._code1_3 = new System.Windows.Forms.Panel();
@@ -42,7 +42,7 @@
             this._code3_2 = new System.Windows.Forms.Panel();
             this._code3_3 = new System.Windows.Forms.Panel();
             this._code3_4 = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.PlayerName = new System.Windows.Forms.Label();
             this._code6_4 = new System.Windows.Forms.Panel();
             this._code6_3 = new System.Windows.Forms.Panel();
             this._code6_2 = new System.Windows.Forms.Panel();
@@ -103,7 +103,7 @@
             this._codeEnemy1_3 = new System.Windows.Forms.Panel();
             this._codeEnemy1_2 = new System.Windows.Forms.Panel();
             this._codeEnemy1_1 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
+            this.OpponentName = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this._input4 = new System.Windows.Forms.Panel();
             this._input3 = new System.Windows.Forms.Panel();
@@ -154,23 +154,25 @@
             this.lineShape3 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.lineShape2 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.lineShape1 = new Microsoft.VisualBasic.PowerPacks.LineShape();
+            this.submitNameButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // button1
+            // submitCodeButton
             // 
-            this.button1.Location = new System.Drawing.Point(261, 533);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(81, 44);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Submit";
-            this.button1.UseVisualStyleBackColor = true;
+            this.submitCodeButton.Location = new System.Drawing.Point(261, 533);
+            this.submitCodeButton.Name = "submitCodeButton";
+            this.submitCodeButton.Size = new System.Drawing.Size(81, 44);
+            this.submitCodeButton.TabIndex = 0;
+            this.submitCodeButton.Text = "Submit";
+            this.submitCodeButton.UseVisualStyleBackColor = true;
+            this.submitCodeButton.Click += new System.EventHandler(this.SubmitButtonClicked);
             // 
-            // textBox1
+            // nameBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(166, 15);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(237, 20);
-            this.textBox1.TabIndex = 1;
+            this.nameBox.Location = new System.Drawing.Point(166, 15);
+            this.nameBox.Name = "nameBox";
+            this.nameBox.Size = new System.Drawing.Size(176, 20);
+            this.nameBox.TabIndex = 1;
             // 
             // _code1_1
             // 
@@ -203,7 +205,6 @@
             this._code1_4.Name = "_code1_4";
             this._code1_4.Size = new System.Drawing.Size(45, 44);
             this._code1_4.TabIndex = 5;
-            this._code1_4.Paint += new System.Windows.Forms.PaintEventHandler(this._code1_4_Paint);
             // 
             // _code2_4
             // 
@@ -269,15 +270,14 @@
             this._code3_4.Size = new System.Drawing.Size(45, 44);
             this._code3_4.TabIndex = 12;
             // 
-            // label1
+            // PlayerName
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(39, 41);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
-            this.label1.TabIndex = 50;
-            this.label1.Text = "Player 1";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.PlayerName.AutoSize = true;
+            this.PlayerName.Location = new System.Drawing.Point(39, 41);
+            this.PlayerName.Name = "PlayerName";
+            this.PlayerName.Size = new System.Drawing.Size(45, 13);
+            this.PlayerName.TabIndex = 50;
+            this.PlayerName.Text = "Player 1";
             // 
             // _code6_4
             // 
@@ -759,14 +759,14 @@
             this._codeEnemy1_1.Size = new System.Drawing.Size(45, 44);
             this._codeEnemy1_1.TabIndex = 75;
             // 
-            // label2
+            // OpponentName
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(541, 41);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 111;
-            this.label2.Text = "Player 2";
+            this.OpponentName.AutoSize = true;
+            this.OpponentName.Location = new System.Drawing.Point(541, 41);
+            this.OpponentName.Name = "OpponentName";
+            this.OpponentName.Size = new System.Drawing.Size(45, 13);
+            this.OpponentName.TabIndex = 111;
+            this.OpponentName.Text = "Player 2";
             // 
             // label3
             // 
@@ -776,7 +776,6 @@
             this.label3.Size = new System.Drawing.Size(121, 13);
             this.label3.TabIndex = 112;
             this.label3.Text = "Please enter your name:";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // _input4
             // 
@@ -785,6 +784,7 @@
             this._input4.Name = "_input4";
             this._input4.Size = new System.Drawing.Size(45, 44);
             this._input4.TabIndex = 116;
+            this._input4.Click += new System.EventHandler(this.InputCode4Clicked);
             // 
             // _input3
             // 
@@ -793,6 +793,7 @@
             this._input3.Name = "_input3";
             this._input3.Size = new System.Drawing.Size(45, 44);
             this._input3.TabIndex = 115;
+            this._input3.Click += new System.EventHandler(this.InputCode3Clicked);
             // 
             // _input2
             // 
@@ -801,6 +802,7 @@
             this._input2.Name = "_input2";
             this._input2.Size = new System.Drawing.Size(45, 44);
             this._input2.TabIndex = 114;
+            this._input2.Click += new System.EventHandler(this.InputCode2Clicked);
             // 
             // _input1
             // 
@@ -809,6 +811,7 @@
             this._input1.Name = "_input1";
             this._input1.Size = new System.Drawing.Size(45, 44);
             this._input1.TabIndex = 113;
+            this._input1.Click += new System.EventHandler(this.InputCode1Clicked);
             // 
             // label4
             // 
@@ -1176,12 +1179,23 @@
             this.lineShape1.Y1 = 521;
             this.lineShape1.Y2 = 521;
             // 
+            // submitNameButton
+            // 
+            this.submitNameButton.Location = new System.Drawing.Point(348, 15);
+            this.submitNameButton.Name = "submitNameButton";
+            this.submitNameButton.Size = new System.Drawing.Size(35, 20);
+            this.submitNameButton.TabIndex = 146;
+            this.submitNameButton.Text = "OK";
+            this.submitNameButton.UseVisualStyleBackColor = true;
+            this.submitNameButton.Click += new System.EventHandler(this.NameButtonClicked);
+            // 
             // FM_Client_GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(839, 590);
+            this.Controls.Add(this.submitNameButton);
             this.Controls.Add(this.panel105);
             this.Controls.Add(this.panel93);
             this.Controls.Add(this.panel106);
@@ -1228,7 +1242,7 @@
             this.Controls.Add(this._input2);
             this.Controls.Add(this._input1);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.OpponentName);
             this.Controls.Add(this._codeEnemy9_4);
             this.Controls.Add(this._codeEnemy9_3);
             this.Controls.Add(this._codeEnemy9_2);
@@ -1289,7 +1303,7 @@
             this.Controls.Add(this._code4_3);
             this.Controls.Add(this._code4_2);
             this.Controls.Add(this._code4_1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.PlayerName);
             this.Controls.Add(this._code3_4);
             this.Controls.Add(this._code3_3);
             this.Controls.Add(this._code3_2);
@@ -1302,8 +1316,8 @@
             this.Controls.Add(this._code1_3);
             this.Controls.Add(this._code1_2);
             this.Controls.Add(this._code1_1);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.nameBox);
+            this.Controls.Add(this.submitCodeButton);
             this.Controls.Add(this.shapeContainer1);
             this.Name = "FM_Client_GUI";
             this.Text = "FasterMind";
@@ -1314,8 +1328,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button submitCodeButton;
+        private System.Windows.Forms.TextBox nameBox;
         private System.Windows.Forms.Panel _code1_1;
         private System.Windows.Forms.Panel _code1_2;
         private System.Windows.Forms.Panel _code1_3;
@@ -1328,7 +1342,7 @@
         private System.Windows.Forms.Panel _code3_2;
         private System.Windows.Forms.Panel _code3_3;
         private System.Windows.Forms.Panel _code3_4;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label PlayerName;
         private System.Windows.Forms.Panel _code6_4;
         private System.Windows.Forms.Panel _code6_3;
         private System.Windows.Forms.Panel _code6_2;
@@ -1389,7 +1403,7 @@
         private System.Windows.Forms.Panel _codeEnemy1_3;
         private System.Windows.Forms.Panel _codeEnemy1_2;
         private System.Windows.Forms.Panel _codeEnemy1_1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label OpponentName;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel _input4;
         private System.Windows.Forms.Panel _input3;
@@ -1440,6 +1454,7 @@
         private Microsoft.VisualBasic.PowerPacks.LineShape lineShape3;
         private Microsoft.VisualBasic.PowerPacks.LineShape lineShape2;
         private Microsoft.VisualBasic.PowerPacks.LineShape lineShape1;
+        private System.Windows.Forms.Button submitNameButton;
     }
 }
 

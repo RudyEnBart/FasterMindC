@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
+using System.Threading;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -15,11 +17,12 @@ using FMNetworkLibrary;
 
 namespace FasterMindC
 {
-    class FM_Client_Controller
+    public class FM_Client_Controller
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+
+        private string _name { get; set; }
+        private short _code { get; set; }
+
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
         private StreamReader _reader;
@@ -29,15 +32,15 @@ namespace FasterMindC
         private byte _serverPort = 42;
         static void Main()
         {
-            new FM_Client_Controller();
+            FM_Client_Controller control = new FM_Client_Controller();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FM_Client_GUI());
-            
+            Application.Run(new FM_Client_GUI(control));
         }
 
         public FM_Client_Controller()
         {
+            this._code = 0;
             try
             {
                 _serverConnection = new TcpClient();
@@ -134,6 +137,23 @@ namespace FasterMindC
         public void SendPacket(FM_Packet packet)
         {
             formatter.Serialize(_sslServerConnection, new JavaScriptSerializer().Serialize(packet));
+        }
+
+        public void NameButtonClick(object sender, EventArgs e, string name)
+        {
+            this._name = name;
+        }
+
+        internal void InputCodeClicked(object sender, EventArgs e, int p)
+        {
+            if ((_code / Math.Pow(1, p - 1)) == 6)
+            {
+
+            }
+            else
+            {
+                _code += (short)(Math.Pow(1, p - 1));
+            }
         }
     }
 }

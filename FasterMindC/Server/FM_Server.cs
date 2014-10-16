@@ -16,7 +16,7 @@ namespace Server
 {
     class FM_Server
     {
-        private byte _codePlayer1;
+        private byte _codePlayer1 = (byte)ENUMS.color.BLUE;
         private byte _codePlayer2;
         static void Main()
         {
