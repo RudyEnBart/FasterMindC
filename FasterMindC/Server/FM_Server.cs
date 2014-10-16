@@ -17,6 +17,9 @@ namespace Server
     class FM_Server
     {
         [STAThread]
+
+        private byte _codePlayer1;
+        private byte _codePlayer2;
         static void Main()
         {
             new FM_Server();
@@ -29,7 +32,7 @@ namespace Server
             {
                 X509Certificate2 _certificate = new X509Certificate2("C:\\certs\\testpfx.pfx", "FIETSA3");
                 IPAddress _localIP = IPAddress.Parse("127.0.0.1");
-                Int32 _port = 666;
+                byte _port = 42;
                 _server = new TcpListener(_localIP, _port);
                 _server.Start();
                 Console.WriteLine("Waiting for connection...");
@@ -75,6 +78,18 @@ namespace Server
                                     case "Connect":
                                         HandleConnectPacket(packet);
                                         break;
+                                    case "InitialCode":
+                                        HandleInitialCodePacket(packet);
+                                        break;
+                                    case "CodeSubmit":
+                                        HandleCodeSubmitPacket(packet);
+                                        break;
+                                    case "NameChange":
+                                        HandleNameChangePacket(packet);
+                                        break;
+                                    case "Disconnect":
+                                        HandleDisconnectPacket(packet);
+                                        break;
                                     default: //nothing
                                         break;
                                 }
@@ -96,7 +111,27 @@ namespace Server
 
         private void HandleConnectPacket(FM_Packet p)
         {
+            throw new NotImplementedException();
+        }
 
+        private void HandleDisconnectPacket(FM_Packet packet)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleNameChangePacket(FM_Packet packet)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleCodeSubmitPacket(FM_Packet packet)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleInitialCodePacket(FM_Packet packet)
+        {
+            throw new NotImplementedException();
         }
     }
 }

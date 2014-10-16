@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace FasterMindC
 {
-    static class FM_Client_Controller
+    class FM_Client_Controller
     {
         /// <summary>
         /// The main entry point for the application.
@@ -17,6 +17,12 @@ namespace FasterMindC
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FM_Client_GUI());
+            new FM_Client_Controller();
+        }
+
+        public FM_Client_Controller()
+        {
+
         }
     }
 }
