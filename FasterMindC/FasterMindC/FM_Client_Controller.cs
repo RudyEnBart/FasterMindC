@@ -164,16 +164,16 @@ namespace FasterMindC
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
         {
-                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
-                {
-                    Debug.WriteLine("The number to edit is too big, resetting");
-                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
-                }
-                else
-                {
-                    _ownCode += (short)(Math.Pow(10, p - 1));
-                    Debug.WriteLine("Changing code to: " + _ownCode);
-                }
+            if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+            {
+                Debug.WriteLine("The number to edit is too big, resetting");
+                _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+            }
+            else
+            {
+                _ownCode += (short)(Math.Pow(10, p - 1));
+                Debug.WriteLine("Changing code to: " + _ownCode);
+            }
         }
 
         internal void SubmitButtonClicked(object sender, EventArgs e)

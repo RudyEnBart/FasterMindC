@@ -4,7 +4,7 @@
     {
         public FM_Packet()
         {
-            
+
         }
         public FM_Packet(string type, string message)
         {
