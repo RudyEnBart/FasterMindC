@@ -42,9 +42,9 @@ namespace FasterMindC
         static void Main()
         {
             FM_Client_Controller control = new FM_Client_Controller();
-            control._gui = new FM_Client_GUI(control);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            control._gui = new FM_Client_GUI(control);
             Application.Run(control._gui);
         }
 
