@@ -27,6 +27,9 @@ namespace FasterMindC
         private SslStream _sslServerConnection;
         private StreamReader _reader;
         private BinaryFormatter formatter = new BinaryFormatter();
+        private string _intialCodeFromOpponent;
+        private string _opponentCode;
+        private string _opponentName;
 
         private string _serverIP = "127.0.0.1";
         private byte _serverPort = 42;
@@ -115,22 +118,24 @@ namespace FasterMindC
 
         private void HandleNameChangePacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _opponentName = packet._message;
+            //Set Label opponent gui.
         }
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _opponentCode = packet._message;
+            //Set Color doorsturen naar gui.
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _intialCodeFromOpponent = packet._message;
         }
 
-        public void buttonpressed()
+        public void sendButtonPressed()
         {
-            FM_Packet packet = new FM_Packet("CodeSubmit", "1234");
+            FM_Packet packet = new FM_Packet("CodeSubmit", "" + _code);
             SendPacket(packet);
         }
 
