@@ -32,14 +32,17 @@ namespace FasterMindC
         private byte _serverPort = 42;
         static void Main()
         {
+            Console.WriteLine("HI, IM IN THE MAIN");
             FM_Client_Controller control = new FM_Client_Controller();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Console.WriteLine("Starting GUI");
             Application.Run(new FM_Client_GUI(control));
         }
 
         public FM_Client_Controller()
         {
+            Console.WriteLine("CONNECTING");
             this._code = 0;
             try
             {
@@ -70,36 +73,39 @@ namespace FasterMindC
             {
                 Console.WriteLine("Couldnt connect to server: " + e);
             }
-            while (true)
+            new Thread(() =>
             {
-                String dataString = "";
-                FM_Packet packet = null;
-                
-                if (_serverConnection.Connected)
+                while (true)
                 {
-                dataString = (String) formatter.Deserialize(_sslServerConnection);
-                packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
-                    switch (packet._type)
+                    String dataString = "";
+                    FM_Packet packet = null;
+
+                    if (_serverConnection.Connected)
                     {
+                        dataString = (String)formatter.Deserialize(_sslServerConnection);
+                        packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
+                        switch (packet._type)
+                        {
                             //sender = incoming client
                             //packet = data van de client
-                        case "InitialCode":
-                            HandleInitialCodePacket(packet);
-                            break;
-                        case "CodeSubmit":
-                            HandleCodeSubmitPacket(packet);
-                            break;
-                        case "NameChange":
-                            HandleNameChangePacket(packet);
-                            break;
-                        case "Disconnect":
-                            HandleDisconnectPacket(packet);
-                            break;
-                        default: //nothing
-                            break;
+                            case "InitialCode":
+                                HandleInitialCodePacket(packet);
+                                break;
+                            case "CodeSubmit":
+                                HandleCodeSubmitPacket(packet);
+                                break;
+                            case "NameChange":
+                                HandleNameChangePacket(packet);
+                                break;
+                            case "Disconnect":
+                                HandleDisconnectPacket(packet);
+                                break;
+                            default: //nothing
+                                break;
+                        }
                     }
                 }
-            }
+            }).Start();
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)
@@ -157,6 +163,11 @@ namespace FasterMindC
                 _code += (short)(Math.Pow(1, p - 1));
                 Console.Write(" to: " + _code);
             }
+        }
+
+        internal void SubmitButtonClicked(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
