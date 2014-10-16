@@ -18,6 +18,9 @@ namespace Server
     {
         private byte _codePlayer1 = (byte)ENUMS.color.BLUE;
         private byte _codePlayer2;
+        private SslStream[] streamArray = new SslStream[2];
+        private short _playerCount = 0;
+        private BinaryFormatter formatter = new BinaryFormatter();
         static void Main()
         {
             new FM_Server();
@@ -62,6 +65,9 @@ namespace Server
                             _clientConnection.Close();
                             return;
                         }
+                        streamArray[_playerCount] = sslStream;
+                        _playerCount++;
+                        SendPacket(new FM_Packet("ID", "" + _playerCount));
                         Console.WriteLine("Authentication succesfull.");
                         while (true)
                         {
@@ -132,6 +138,16 @@ namespace Server
         private void HandleInitialCodePacket(FM_Packet packet)
         {
             throw new NotImplementedException();
+        }
+
+        public void SendPacket(FM_Packet packet)
+        {
+            formatter.Serialize(streamArray[int.Parse(packet._id)], new JavaScriptSerializer().Serialize(packet));
+        }
+
+        public void SendPacket(FM_Packet packet, SslStream stream)
+        {
+            formatter.Serialize(stream, new JavaScriptSerializer().Serialize(packet));
         }
     }
 }
