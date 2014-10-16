@@ -27,6 +27,8 @@ namespace FasterMindC
         private bool _firstSubmit { get; set; }
         private string _ID;
 
+        private FM_Client_GUI _gui;
+
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
         private StreamReader _reader;
@@ -40,9 +42,10 @@ namespace FasterMindC
         static void Main()
         {
             FM_Client_Controller control = new FM_Client_Controller();
+            control._gui = new FM_Client_GUI(control);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FM_Client_GUI(control));
+            Application.Run(control._gui);
         }
 
         public FM_Client_Controller()
@@ -132,6 +135,7 @@ namespace FasterMindC
         private void HandleIDPacket(FM_Packet packet)
         {
             this._ID = packet._id;
+            Console.WriteLine("ID REGISTERED: " + _ID);
         }
 
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
