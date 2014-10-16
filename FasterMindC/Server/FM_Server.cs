@@ -67,7 +67,7 @@ namespace Server
                         }
                         streamArray[_playerCount] = sslStream;
                         _playerCount++;
-                        SendPacket(new FM_Packet("ID", "" + _playerCount),sslStream);
+                        SendPacket(new FM_Packet("ID", "" + _playerCount), sslStream);
                         Console.WriteLine("Authentication succesfull.");
                         while (true)
                         {
