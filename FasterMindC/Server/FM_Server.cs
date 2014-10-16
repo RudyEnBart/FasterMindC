@@ -1,19 +1,21 @@
-﻿using System;
+﻿using FMNetworkLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Web.Script.Serialization;
 
 namespace Server
 {
     class FM_Server
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+        private IPAddress _localIP = IPAddress.Parse("127.0.0.1");
+
         [STAThread]
         static void Main()
         {
@@ -41,14 +43,13 @@ namespace Server
 
                     while (true)
                     {
-
                         String dataString = "";
                         FM_Packet packet = null;
                         if (sender.Connected)
                         {
                             dataString = (String)formatter.Deserialize(sslStream);
                             //dataString = (String)formatter.Deserialize(sender.GetStream());
-                            packet = Utils.GetPacket(dataString);
+                            packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
 
                             //Console.WriteLine(dataString);
 
@@ -58,7 +59,7 @@ namespace Server
                                 //sender = incoming client
                                 //packet = data van de client
                                 case "Chat":
-                                    HandleChatPacket(packet);
+                                    HandleConnectPacket(packet);
                                     break;
                                 default: //nothing
                                     break;
@@ -67,6 +68,11 @@ namespace Server
                     } // end While
                 }).Start();
             }
+
+        }
+
+        private void HandleConnectPacket(FM_Packet p)
+        {
 
         }
     }
