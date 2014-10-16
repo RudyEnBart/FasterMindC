@@ -16,8 +16,6 @@ namespace Server
 {
     class FM_Server
     {
-        [STAThread]
-
         private byte _codePlayer1;
         private byte _codePlayer2;
         static void Main()
@@ -49,6 +47,7 @@ namespace Server
                         SslStream sslStream = new SslStream(_clientConnection.GetStream(), false);
                         try
                         {
+                            Console.WriteLine("Authenticating connection...");
                             sslStream.AuthenticateAsServer(_certificate, false, SslProtocols.Tls, false);
                         }
                         catch (Exception e)
@@ -63,18 +62,19 @@ namespace Server
                             _clientConnection.Close();
                             return;
                         }
+                        Console.WriteLine("Authentication succesfull.");
                         while (true)
                         {
                             String dataString = "";
                             FM_Packet packet = null;
                             if (_clientConnection.Connected)
                             {
-                                dataString = (String) formatter.Deserialize(sslStream);
+                                dataString = (String)formatter.Deserialize(sslStream);
                                 packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
                                 switch (packet._type)
                                 {
-                                        //sender = incoming client
-                                        //packet = data van de client
+                                    //sender = incoming client
+                                    //packet = data van de client
                                     case "Connect":
                                         HandleConnectPacket(packet);
                                         break;
