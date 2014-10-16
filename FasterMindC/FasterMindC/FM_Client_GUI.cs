@@ -35,7 +35,7 @@ namespace FasterMindC
         private void InputCode1Clicked(object sender, EventArgs e)
         {
             _controller.InputCodeClicked(sender, e, 1);
-            _inputCode1.BackColor = ENUMS.color.BLUE;
+            _inputCode1.BackColor = Color.AliceBlue;
         }
 
         private void InputCode2Clicked(object sender, EventArgs e)
