@@ -24,10 +24,33 @@ namespace FMNetworkLibrary
             [ByteValue(6)]
             CYAN
         }
-        public static byte GetByteValue(color c)
+        public static Color GetColor(color c)
         {
-            byte result = 0;
-            result = GetByteValue(c);
+            Color result;
+            switch ((byte)c)
+            {
+                case 1:
+                    result = Color.Red;
+                    break;
+                case 2:
+                    result = Color.Blue;
+                    break;
+                case 3:
+                    result = Color.Green;
+                    break;
+                case 4:
+                    result = Color.Yellow;
+                    break;
+                case 5:
+                    result = Color.Pink;
+                    break;
+                case 6:
+                    result = Color.Cyan;
+                    break;
+                default:
+                    result = Color.Black;
+                    break;
+            }
             return result;
         }
 

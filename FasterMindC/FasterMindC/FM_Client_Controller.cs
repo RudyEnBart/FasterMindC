@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
 using FMNetworkLibrary;
+using System.Diagnostics;
 
 namespace FasterMindC
 {
@@ -21,7 +22,10 @@ namespace FasterMindC
     {
 
         private string _name { get; set; }
-        private short _code { get; set; }
+        private short _ownCode { get; set; }
+        private short _submitCode { get; set; }
+        private bool _firstSubmit { get; set; }
+        private short _ID;
 
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
@@ -32,18 +36,15 @@ namespace FasterMindC
         private byte _serverPort = 42;
         static void Main()
         {
-            Console.WriteLine("HI, IM IN THE MAIN");
             FM_Client_Controller control = new FM_Client_Controller();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Console.WriteLine("Starting GUI");
             Application.Run(new FM_Client_GUI(control));
         }
 
         public FM_Client_Controller()
         {
-            Console.WriteLine("CONNECTING");
-            this._code = 0;
+            this._ownCode = 0;
             try
             {
                 _serverConnection = new TcpClient();
@@ -88,8 +89,8 @@ namespace FasterMindC
                         {
                             //sender = incoming client
                             //packet = data van de client
-                            case "InitialCode":
-                                HandleInitialCodePacket(packet);
+                            case "ID":
+                                HandleIDPacket(packet);
                                 break;
                             case "CodeSubmit":
                                 HandleCodeSubmitPacket(packet);
@@ -123,9 +124,9 @@ namespace FasterMindC
             throw new NotImplementedException();
         }
 
-        private void HandleInitialCodePacket(FM_Packet packet)
+        private void HandleIDPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            this._ID = packet._id;
         }
 
         public void buttonpressed()
@@ -152,22 +153,32 @@ namespace FasterMindC
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
         {
-            Console.WriteLine("The code is: " + _code);
-            if ((_code / Math.Pow(1, p - 1))%10 == 6)
-            {
-                Console.WriteLine("The number to edit is too big, resetting");
-            }
-            else
-            {
-                Console.WriteLine("The code has gone from: " + _code);
-                _code += (short)(Math.Pow(1, p - 1));
-                Console.Write(" to: " + _code);
-            }
+                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                {
+                    Debug.WriteLine("The number to edit is too big, resetting");
+                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                }
+                else
+                {
+                    _ownCode += (short)(Math.Pow(10, p - 1));
+                    Debug.WriteLine("Changing code to: " + _ownCode);
+                }
         }
 
         internal void SubmitButtonClicked(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (_serverConnection.Connected)
+            {
+                if (_firstSubmit)
+                {
+                    SendPacket(new FM_Packet("InitialCode", "" + _ownCode));
+                }
+                else
+                {
+                    SendPacket(new FM_Packet("CodeSubmit", "" + _submitCode));
+                }
+            }
         }
+
     }
 }
