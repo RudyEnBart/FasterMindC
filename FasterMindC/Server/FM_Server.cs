@@ -16,9 +16,10 @@ namespace Server
 {
     class FM_Server
     {
-        private byte _codePlayer1 = (byte)ENUMS.color.BLUE;
-        private byte _codePlayer2;
-        private SslStream[] streamArray = new SslStream[2];
+        private const byte MAX_PLAYERS = 2;
+
+        private string[] _playerCodes = new string[MAX_PLAYERS];
+        private SslStream[] streamArray = new SslStream[MAX_PLAYERS];
         private short _playerCount = 0;
         private BinaryFormatter formatter = new BinaryFormatter();
         static void Main()
@@ -45,62 +46,75 @@ namespace Server
 
                     new Thread(() =>
                     {
-                        Console.WriteLine("Connection found!");
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        SslStream sslStream = new SslStream(_clientConnection.GetStream(), false);
-                        try
+                        if (_playerCount < MAX_PLAYERS)
                         {
-                            Console.WriteLine("Authenticating connection...");
-                            sslStream.AuthenticateAsServer(_certificate, false, SslProtocols.Tls, false);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine("Exception: {0}", e.Message);
-                            if (e.InnerException != null)
+                            Console.WriteLine("Connection found!");
+                            BinaryFormatter formatter = new BinaryFormatter();
+                            SslStream sslStream = new SslStream(_clientConnection.GetStream(), false);
+                            try
                             {
-                                Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
+                                Console.WriteLine("Authenticating connection...");
+                                sslStream.AuthenticateAsServer(_certificate, false, SslProtocols.Tls, false);
                             }
-                            Console.WriteLine("Authentication failed - closing the connection.");
-                            sslStream.Close();
-                            _clientConnection.Close();
-                            return;
-                        }
-                        streamArray[_playerCount] = sslStream;
-                        _playerCount++;
-                        SendPacket(new FM_Packet("ID", "" + _playerCount),sslStream);
-                        Console.WriteLine("Authentication succesfull.");
-                        while (true)
-                        {
-                            String dataString = "";
-                            FM_Packet packet = null;
-                            if (_clientConnection.Connected)
+                            catch (Exception e)
                             {
-                                dataString = (String)formatter.Deserialize(sslStream);
-                                packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
-                                switch (packet._type)
+                                Console.WriteLine("Exception: {0}", e.Message);
+                                if (e.InnerException != null)
                                 {
-                                    //sender = incoming client
-                                    //packet = data van de client
-                                    case "Connect":
-                                        HandleConnectPacket(packet);
-                                        break;
-                                    case "InitialCode":
-                                        HandleInitialCodePacket(packet);
-                                        break;
-                                    case "CodeSubmit":
-                                        HandleCodeSubmitPacket(packet);
-                                        break;
-                                    case "NameChange":
-                                        HandleNameChangePacket(packet);
-                                        break;
-                                    case "Disconnect":
-                                        HandleDisconnectPacket(packet);
-                                        break;
-                                    default: //nothing
-                                        break;
+                                    Console.WriteLine("Inner exception: {0}", e.InnerException.Message);
+                                }
+                                Console.WriteLine("Authentication failed - closing the connection.");
+                                sslStream.Close();
+                                _clientConnection.Close();
+                                return;
+                            }
+                            streamArray[_playerCount] = sslStream;
+                            _playerCount++;
+                            SendPacket(new FM_Packet("ID", "" + _playerCount), sslStream);
+                            Console.WriteLine("Authentication succesfull.");
+                            while (true)
+                            {
+                                String dataString = "";
+                                FM_Packet packet = null;
+                                if (_clientConnection.Connected)
+                                {
+                                    dataString = (String)formatter.Deserialize(sslStream);
+                                    packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
+                                    switch (packet._type)
+                                    {
+                                        //sender = incoming client
+                                        //packet = data van de client
+                                        case "Connect":
+                                            HandleConnectPacket(packet);
+                                            break;
+                                        case "InitialCode":
+                                            HandleInitialCodePacket(packet);
+                                            break;
+                                        case "CodeSubmit":
+                                            HandleCodeSubmitPacket(packet);
+                                            break;
+                                        case "NameChange":
+                                            HandleNameChangePacket(packet);
+                                            break;
+                                        case "Disconnect":
+                                            HandleDisconnectPacket(packet);
+                                            break;
+                                        default: //nothing
+                                            break;
+                                    }
+                                }
+                            } // end While
+                        }
+                        else
+                        {
+                            if (_playerCodes.Count(s => s != null) == MAX_PLAYERS)
+                            {
+                                foreach (SslStream s in streamArray)
+                                {
+                                    SendPacket(s, new FM_Packet("Ready", "GET READY"));
                                 }
                             }
-                        } // end While
+                        }
                     }).Start();
                 }
             }
@@ -137,7 +151,7 @@ namespace Server
 
         private void HandleInitialCodePacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _playerCodes[int.Parse(packet._id)] = packet._message;
         }
 
         public void SendPacket(FM_Packet packet)

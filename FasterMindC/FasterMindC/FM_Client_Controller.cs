@@ -107,12 +107,20 @@ namespace FasterMindC
                             case "Disconnect":
                                 HandleDisconnectPacket(packet);
                                 break;
+                            case "Ready":
+                                HandleReadyPacket(packet);
+                                break;
                             default: //nothing
                                 break;
                         }
                     }
                 }
             }).Start();
+        }
+
+        private void HandleReadyPacket(FM_Packet packet)
+        {
+            //TODO make both clients start at the same time
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)
@@ -134,7 +142,7 @@ namespace FasterMindC
 
         private void HandleIDPacket(FM_Packet packet)
         {
-            this._ID = packet._id;
+            this._ID = packet._message;
             Console.WriteLine("ID REGISTERED: " + _ID);
         }
 
@@ -174,11 +182,11 @@ namespace FasterMindC
             {
                 if (_firstSubmit)
                 {
-                    SendPacket(new FM_Packet("InitialCode", "" + _ownCode));
+                    SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                 }
                 else
                 {
-                    SendPacket(new FM_Packet("CodeSubmit", "" + _submitCode));
+                    SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
                 }
             }
         }
