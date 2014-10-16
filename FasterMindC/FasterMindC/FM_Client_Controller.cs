@@ -25,12 +25,15 @@ namespace FasterMindC
         private short _ownCode { get; set; }
         private short _submitCode { get; set; }
         private bool _firstSubmit { get; set; }
-        private short _ID;
+        private string _ID;
 
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
         private StreamReader _reader;
         private BinaryFormatter formatter = new BinaryFormatter();
+        private string _intialCodeFromOpponent;
+        private string _opponentCode;
+        private string _opponentName;
 
         private string _serverIP = "127.0.0.1";
         private byte _serverPort = 42;
@@ -116,23 +119,19 @@ namespace FasterMindC
 
         private void HandleNameChangePacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _opponentName = packet._message;
+            //Set Label opponent gui.
         }
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            _opponentCode = packet._message;
+            //Set Color doorsturen naar gui.
         }
 
         private void HandleIDPacket(FM_Packet packet)
         {
             this._ID = packet._id;
-        }
-
-        public void buttonpressed()
-        {
-            FM_Packet packet = new FM_Packet("CodeSubmit", "1234");
-            SendPacket(packet);
         }
 
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
