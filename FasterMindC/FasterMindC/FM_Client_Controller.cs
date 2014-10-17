@@ -51,6 +51,7 @@ namespace FasterMindC
         public FM_Client_Controller()
         {
             this._ownCode = 0;
+            _firstSubmit = true;
             try
             {
                 _serverConnection = new TcpClient();
@@ -121,6 +122,7 @@ namespace FasterMindC
         private void HandleReadyPacket(FM_Packet packet)
         {
             //TODO make both clients start at the same time
+            Debug.WriteLine("START!");
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)
@@ -183,6 +185,8 @@ namespace FasterMindC
                 if (_firstSubmit)
                 {
                     SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
+                    _firstSubmit = false;
+                    _gui.MoveCodeRight();
                 }
                 else
                 {

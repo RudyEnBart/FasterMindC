@@ -105,16 +105,6 @@ namespace Server
                                 }
                             } // end While
                         }
-                        else
-                        {
-                            if (_playerCodes.Count(s => s != null) == MAX_PLAYERS)
-                            {
-                                foreach (SslStream s in streamArray)
-                                {
-                                    SendPacket(s, new FM_Packet("Ready", "GET READY"));
-                                }
-                            }
-                        }
                     }).Start();
                 }
             }
@@ -146,12 +136,20 @@ namespace Server
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
         {
-            _playerCodes[int.Parse(packet._id)] = packet._message;
+            Console.WriteLine("Received code: " + packet._message + " from player " + packet._id);
+            _playerCodes[int.Parse(packet._id)-1] = packet._message;
+            if (_playerCodes.Count(s => s != null) == MAX_PLAYERS)
+            {
+                foreach (SslStream s in streamArray)
+                {
+                    SendPacket(new FM_Packet("Ready", "GET READY"), s);
+                }
+            }
         }
 
         public void SendPacket(FM_Packet packet)
