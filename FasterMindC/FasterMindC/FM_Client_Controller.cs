@@ -25,6 +25,7 @@ namespace FasterMindC
         private short _ownCode { get; set; }
         private short _submitCode { get; set; }
         private bool _firstSubmit { get; set; }
+        private byte _attempt { get; set; }
         private string _ID;
 
         private FM_Client_GUI _gui;
@@ -186,14 +187,17 @@ namespace FasterMindC
                 {
                     SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                     _firstSubmit = false;
-                    _gui.MoveCodeRight();
+                    _gui.MoveCode(true, _attempt);
                 }
                 else
                 {
                     SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
+                    _gui.MoveCode(false, _attempt);
+                    _attempt++;
                 }
             }
         }
+
 
     }
 }
