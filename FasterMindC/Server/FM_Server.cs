@@ -22,6 +22,7 @@ namespace Server
         private SslStream[] streamArray = new SslStream[MAX_PLAYERS];
         private short _playerCount = 0;
         private BinaryFormatter formatter = new BinaryFormatter();
+        private byte _connectPackages = 0;
         static void Main()
         {
             new FM_Server();
@@ -121,14 +122,16 @@ namespace Server
 
         private void HandleConnectPacket(FM_Packet packet)
         {
-            if (_playerCount == MAX_PLAYERS)
+            _connectPackages++;
+            Console.WriteLine("amount of connectpackages: " + _connectPackages);
+            if (_connectPackages == MAX_PLAYERS)
             {
                 FM_Packet p = new FM_Packet("Connect", "All players have connected");
                 foreach (SslStream s in streamArray)
                 {
                     SendPacket(p, s);
-                }
-                Console.WriteLine("HOW MANY TIMES DID I SEND THIS");
+                } 
+                _connectPackages = 0;
             }
         }
 

@@ -32,12 +32,10 @@ namespace FasterMindC
                     if (p.Name.Contains("result"))
                     {
                         _myResultPanels.Add(p);
-                        Console.WriteLine("_myResultPanels + " + p.Name);
                     }
                     else
                     {
                         _myPanels.Add(p);
-                        Console.WriteLine("_myPanels + " + p.Name);
                     }
                 }
             }
@@ -115,7 +113,6 @@ namespace FasterMindC
         {
             if (first)
             {
-                Console.WriteLine("First submit!");
                 this._inputCode1.BackColor = this._input1.BackColor;
                 this._inputCode2.BackColor = this._input2.BackColor;
                 this._inputCode3.BackColor = this._input3.BackColor;
@@ -125,8 +122,6 @@ namespace FasterMindC
             }
             else 
             {
-                Console.WriteLine("Submit number: " + attempt);
-                Console.WriteLine("Panel number: " + (8 + (attempt * 4) + 1) + " - Panel name: " + this._myPanels[8 + (attempt * 4) + 1].Name);
                 this._myPanels[8 + (attempt * 4) + 0].BackColor = this._input1.BackColor;
                 this._myPanels[8 + (attempt * 4) + 1].BackColor = this._input2.BackColor;
                 this._myPanels[8 + (attempt * 4) + 2].BackColor = this._input3.BackColor;
@@ -177,21 +172,17 @@ namespace FasterMindC
 
         internal void SetResultColor(byte _attempt, string result)
         {
-            Console.WriteLine(result);
             int correct = Int32.Parse(result.Substring(0, 1));
             int halfcorrect = Int32.Parse(result.Substring(1, 1));
-            Console.WriteLine("correct is: " + correct + " - halfcorrect is: " + halfcorrect);
             int index = 0;
             for (int i = 0; i < correct; i++) 
             {
                 this._myResultPanels[((_attempt - 1) * 4) + index].BackColor = Color.Red;
-                Console.WriteLine("Coloring resultpanel " + _attempt * 4 + index + " to RED");
                 index++;
             }
             for (int i = 0; i < halfcorrect; i++)
             {
                 this._myResultPanels[((_attempt - 1) * 4) + index].BackColor = Color.White;
-                Console.WriteLine("Coloring resultpanel " + _attempt * 4 + index + " to WHITE");
                 index++;
             }
         }

@@ -47,23 +47,16 @@ namespace FasterMindC
             FM_Client_Controller control = new FM_Client_Controller();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            control._gui = new FM_Client_GUI(control);
-            control._conForm = new Connection_Form();
+            /*control._conForm = new Connection_Form();
             control._conForm.Show();
             control._conForm.TopMost = true;
-            control._gui.Enabled = false;
-            control.SendConnectPacket();
+            control._gui.Enabled = false;*/
+            control.init();
             Application.Run(control._gui);
-        }
-
-        private void SendConnectPacket()
-        {
-            SendPacket(new FM_Packet("Connect", "Connection established!"));
         }
 
         public FM_Client_Controller()
         {
-            init();
             try
             {
                 _serverConnection = new TcpClient();
@@ -115,7 +108,7 @@ namespace FasterMindC
                             case "OpponentSubmit":
                                 HandleOpponentSubmitPacket(packet);
                                 break;
-                            case "CodeResult" :
+                            case "CodeResult":
                                 HandleCodeResultPacket(packet);
                                 break;
                             case "NameChange":
@@ -130,10 +123,10 @@ namespace FasterMindC
                             case "Ready":
                                 HandleReadyPacket(packet);
                                 break;
-                            case "GameLost" :
+                            case "GameLost":
                                 HandleGameLostPacket(packet);
                                 break;
-                            case "GameTie" :
+                            case "GameTie":
                                 HandleGameTiePacket(packet);
                                 break;
                             default: //nothing
@@ -167,30 +160,27 @@ namespace FasterMindC
             {
                 _gui.init();
             }
+            _conForm = new Connection_Form();
+            _conForm.Show();
+            _conForm.TopMost = true; 
+            _gui = new FM_Client_GUI(this);
+            _gui.Enabled = false;
+            SendConnectPacket();
         }
 
         delegate void HandleConnectPacketDel();
 
         private void HandleConnectPacket()
         {
-            if(_conForm != null)
+            if (_conForm.InvokeRequired)
             {
-                if(_conForm.InvokeRequired)
-                {
-                    HandleConnectPacketDel d = new HandleConnectPacketDel(HandleConnectPacket);
-                    _conForm.Invoke(d);
-                }
-                else
-                {
-                    Console.WriteLine("OMG RECEIVED PACKET CONNECTION SHIT YOU KNOW");
-                    _conForm.Close();
-                    _gui.Enabled = true;
-                }
+                HandleConnectPacketDel d = new HandleConnectPacketDel(HandleConnectPacket);
+                _conForm.Invoke(d);
             }
             else
             {
-                Thread.Sleep(1000);
-                HandleConnectPacket();
+                _conForm.Close();
+                _gui.Enabled = true;
             }
         }
 
@@ -198,10 +188,10 @@ namespace FasterMindC
         {
             _gui.SetResultColor(_attempt, packet._message);
             // all 10s are red all 1s are white
-            if(packet._message == "40")
+            if (packet._message == "40")
             {
                 DialogResult result = MessageBox.Show("YOU WIN! \n Do you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
-                switch(result)
+                switch (result)
                 {
                     case DialogResult.Yes:
                         init();
@@ -211,7 +201,7 @@ namespace FasterMindC
                         break;
                 }
             }
-            else if(_attempt == 9)
+            else if (_attempt == 9)
             {
                 MessageBox.Show("You failed to guess your opponents code :( \n Waiting for opponent to finish", "Waiting for opponent");
             }
@@ -272,6 +262,11 @@ namespace FasterMindC
             formatter.Serialize(_sslServerConnection, new JavaScriptSerializer().Serialize(packet));
         }
 
+        private void SendConnectPacket()
+        {
+            SendPacket(new FM_Packet("Connect", "Connection established!"));
+        }
+
         public void NameButtonClick(object sender, EventArgs e, string name)
         {
             this._name = name;
@@ -280,30 +275,26 @@ namespace FasterMindC
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
         {
-            if(_firstSubmit)
+            if (_firstSubmit)
             {
                 if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
                 {
-                    Debug.WriteLine("The number to edit is too big, resetting");
                     _ownCode -= (short)(5 * Math.Pow(10, p - 1));
                 }
                 else
                 {
                     _ownCode += (short)(Math.Pow(10, p - 1));
-                    Debug.WriteLine("Changing Owncode to: " + _ownCode);
                 }
             }
             else
             {
                 if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
                 {
-                    Debug.WriteLine("The number to edit is too big, resetting");
                     _submitCode -= (short)(5 * Math.Pow(10, p - 1));
                 }
                 else
                 {
                     _submitCode += (short)(Math.Pow(10, p - 1));
-                    Debug.WriteLine("Changing Submitcode to: " + _submitCode);
                 }
             }
         }
@@ -314,7 +305,7 @@ namespace FasterMindC
             {
                 if (_firstSubmit)
                 {
-                    if(!("" + _ownCode).Contains("0"))
+                    if (!("" + _ownCode).Contains("0"))
                     {
                         SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                         _firstSubmit = false;
