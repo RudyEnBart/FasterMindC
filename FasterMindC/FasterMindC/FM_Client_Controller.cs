@@ -216,7 +216,7 @@ namespace FasterMindC
                 else
                 {
                     _submitCode += (short)(Math.Pow(10, p - 1));
-                    Debug.WriteLine("Changing Submitcode to: " + _ownCode);
+                    Debug.WriteLine("Changing Submitcode to: " + _submitCode);
                 }
             }
         }
@@ -245,6 +245,7 @@ namespace FasterMindC
                         SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
                         _gui.MoveCode(false, _attempt);
                         _attempt++;
+                        _submitCode = 0;
                     }
                     else
                     {
