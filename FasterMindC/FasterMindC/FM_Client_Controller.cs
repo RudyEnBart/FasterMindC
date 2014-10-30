@@ -129,7 +129,14 @@ namespace FasterMindC
         private void HandleCodeResultPacket(FM_Packet packet)
         {
             // all 10s are red all 1s are white
-            _gui.SetResultColor(_attempt, packet._message);
+            if(packet._message == "40")
+            {
+                MessageBox.Show("FUCK YEAH!");
+            }
+            else
+            {
+                _gui.SetResultColor(_attempt, packet._message);
+            }
         }
 
         private void HandleGameLostPacket(FM_Packet packet)
@@ -151,6 +158,7 @@ namespace FasterMindC
         private void HandleNameChangePacket(FM_Packet packet)
         {
             _opponentName = packet._message;
+            _gui.ChangeOpponentName(packet._message);
             //Set Label opponent gui.
         }
 

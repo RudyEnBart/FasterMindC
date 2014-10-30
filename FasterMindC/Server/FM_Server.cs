@@ -139,6 +139,7 @@ namespace Server
         {
             int result = 0;
             int ComparePacket = CheckID(packet);
+            Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[ComparePacket]);
             int i = 0;
             while (i < 4)
             {
@@ -146,16 +147,17 @@ namespace Server
                 {
                     result += 10;
                     i++;
-                    break;
                 }
-                if (_playerCodes[ComparePacket].Contains(packet._message.Substring(i, 1)))
+                else if (_playerCodes[ComparePacket].Contains(packet._message.Substring(i, 1)))
                 {
                     result += 1;
                 }
                 i++;
+                Console.WriteLine("Result has changed to: " + result);
             }
             if (result == 40)
             {
+                Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
                 SendPacket(new FM_Packet(ComparePacket + "", "GameLost", "You are a n00b and lost the game!"));
             }
             SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
@@ -189,11 +191,11 @@ namespace Server
             int OpponentID;
             if (packet._id == "1")
             {
-                OpponentID = 1;
+                OpponentID = 0;
             }
             else
             {
-                OpponentID = 0;
+                OpponentID = 1;
             }
             return OpponentID;
         }

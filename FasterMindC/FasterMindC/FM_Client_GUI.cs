@@ -166,5 +166,20 @@ namespace FasterMindC
         {
             this._myResultPanels[_attempt * 1].BackColor = Color.Red;
         }
+
+        delegate void ChangeOpponentNameDel(string name);
+
+        public void ChangeOpponentName(string name)
+        {
+            if(this.InvokeRequired)
+            {
+                ChangeOpponentNameDel d = new ChangeOpponentNameDel(ChangeOpponentName);
+                this.Invoke(d, new object[] { name });
+            }
+            else
+            {
+                OpponentName.Text = name;
+            }
+        }
     }
 }
