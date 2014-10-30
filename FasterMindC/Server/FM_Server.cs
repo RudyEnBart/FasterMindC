@@ -105,14 +105,6 @@ namespace Server
                                 }
                             } // end While
                         }
-                        else
-                        {
-                            FM_Packet p = new FM_Packet("Connect", "All players have connected");
-                            foreach (SslStream s in streamArray)
-                            {
-                                SendPacket(p, s);
-                            }
-                        }
                     }).Start();
                 }
             }
@@ -127,9 +119,17 @@ namespace Server
 
         }
 
-        private void HandleConnectPacket(FM_Packet p)
+        private void HandleConnectPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            if (_playerCount == MAX_PLAYERS)
+            {
+                FM_Packet p = new FM_Packet("Connect", "All players have connected");
+                foreach (SslStream s in streamArray)
+                {
+                    SendPacket(p, s);
+                }
+                Console.WriteLine("HOW MANY TIMES DID I SEND THIS");
+            }
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)

@@ -52,7 +52,13 @@ namespace FasterMindC
             control._conForm.Show();
             control._conForm.TopMost = true;
             control._gui.Enabled = false;
+            control.SendConnectPacket();
             Application.Run(control._gui);
+        }
+
+        private void SendConnectPacket()
+        {
+            SendPacket(new FM_Packet("Connect", "Connection established!"));
         }
 
         public FM_Client_Controller()
@@ -116,7 +122,7 @@ namespace FasterMindC
                                 HandleNameChangePacket(packet);
                                 break;
                             case "Connect":
-                                HandleConnectPacket(packet);
+                                HandleConnectPacket();
                                 break;
                             case "Disconnect":
                                 HandleDisconnectPacket(packet);
@@ -163,10 +169,29 @@ namespace FasterMindC
             }
         }
 
-        private void HandleConnectPacket(FM_Packet packet)
+        delegate void HandleConnectPacketDel();
+
+        private void HandleConnectPacket()
         {
-            _conForm.Close();
-            _gui.Enabled = true;
+            if(_conForm != null)
+            {
+                if(_conForm.InvokeRequired)
+                {
+                    HandleConnectPacketDel d = new HandleConnectPacketDel(HandleConnectPacket);
+                    _conForm.Invoke(d);
+                }
+                else
+                {
+                    Console.WriteLine("OMG RECEIVED PACKET CONNECTION SHIT YOU KNOW");
+                    _conForm.Close();
+                    _gui.Enabled = true;
+                }
+            }
+            else
+            {
+                Thread.Sleep(1000);
+                HandleConnectPacket();
+            }
         }
 
         private void HandleCodeResultPacket(FM_Packet packet)
