@@ -146,7 +146,6 @@ namespace Server
                 if (_playerCodes[ComparePacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
                 {
                     result += 10;
-                    i++;
                 }
                 else if (_playerCodes[ComparePacket].Contains(packet._message.Substring(i, 1)))
                 {
