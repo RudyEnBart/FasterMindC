@@ -20,6 +20,7 @@ namespace FasterMindC
         private byte code3 = 6;
         private byte code4 = 6;
         private List<Panel> _myPanels = new List<Panel>();
+        private List<Panel> _myResultPanels = new List<Panel>();
         public FM_Client_GUI(FM_Client_Controller controller)
         {
             this._controller = controller;
@@ -28,8 +29,16 @@ namespace FasterMindC
             {
                 if (p.Name.Contains("_"))
                 {
-                    _myPanels.Add(p);
-                    Console.WriteLine(p.Name);
+                    if (p.Name.Contains("result"))
+                    {
+                        _myResultPanels.Add(p);
+                        Console.WriteLine("_myResultPanels + " + p.Name);
+                    }
+                    else
+                    {
+                        _myPanels.Add(p);
+                        Console.WriteLine("_myPanels + " + p.Name);
+                    }
                 }
             }
         }
@@ -98,6 +107,8 @@ namespace FasterMindC
                 this._inputCode2.BackColor = this._input2.BackColor;
                 this._inputCode3.BackColor = this._input3.BackColor;
                 this._inputCode4.BackColor = this._input4.BackColor;
+
+                ResetCodes();
             }
             else 
             {
@@ -149,6 +160,11 @@ namespace FasterMindC
                 PlayerName.Text = nameBox.Text;
                 _controller.NameButtonClick(sender, e, PlayerName.Text);
             }
+        }
+
+        internal void SetResultColor(byte _attempt, string result)
+        {
+
         }
     }
 }

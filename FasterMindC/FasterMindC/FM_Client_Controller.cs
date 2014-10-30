@@ -103,6 +103,9 @@ namespace FasterMindC
                             case "CodeSubmit":
                                 HandleCodeSubmitPacket(packet);
                                 break;
+                            case "CodeResult" :
+                                HandleCodeResultPacket(packet);
+                                break;
                             case "NameChange":
                                 HandleNameChangePacket(packet);
                                 break;
@@ -112,12 +115,26 @@ namespace FasterMindC
                             case "Ready":
                                 HandleReadyPacket(packet);
                                 break;
+                            case "GameLost" :
+                                HandleGameLostPacket(packet);
+                                break;
                             default: //nothing
                                 break;
                         }
                     }
                 }
             }).Start();
+        }
+
+        private void HandleCodeResultPacket(FM_Packet packet)
+        {
+            // all 10s are red all 1s are white
+            _gui.SetResultColor(_attempt, packet._message);
+        }
+
+        private void HandleGameLostPacket(FM_Packet packet)
+        {
+            MessageBox.Show(packet._message);
         }
 
         private void HandleReadyPacket(FM_Packet packet)
@@ -167,15 +184,31 @@ namespace FasterMindC
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
         {
-            if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+            if(_firstSubmit)
             {
-                Debug.WriteLine("The number to edit is too big, resetting");
-                _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                {
+                    Debug.WriteLine("The number to edit is too big, resetting");
+                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                }
+                else
+                {
+                    _ownCode += (short)(Math.Pow(10, p - 1));
+                    Debug.WriteLine("Changing Owncode to: " + _ownCode);
+                }
             }
             else
             {
-                _ownCode += (short)(Math.Pow(10, p - 1));
-                Debug.WriteLine("Changing code to: " + _ownCode);
+                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                {
+                    Debug.WriteLine("The number to edit is too big, resetting");
+                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                }
+                else
+                {
+                    _ownCode += (short)(Math.Pow(10, p - 1));
+                    Debug.WriteLine("Changing Submitcode to: " + _ownCode);
+                }
             }
         }
 
@@ -185,15 +218,29 @@ namespace FasterMindC
             {
                 if (_firstSubmit)
                 {
-                    SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
-                    _firstSubmit = false;
-                    _gui.MoveCode(true, _attempt);
+                    if(_ownCode > 1111)
+                    {
+                        SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
+                        _firstSubmit = false;
+                        _gui.MoveCode(true, _attempt);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please fill in all the colors before submitting");
+                    }
                 }
                 else
                 {
-                    SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
-                    _gui.MoveCode(false, _attempt);
-                    _attempt++;
+                    if (_submitCode > 1111)
+                    {
+                        SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
+                        _gui.MoveCode(false, _attempt);
+                        _attempt++;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color");
+                    }
                 }
             }
         }
