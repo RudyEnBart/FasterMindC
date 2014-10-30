@@ -149,17 +149,23 @@ namespace Server
             int OpponentID = CheckID(packet);
             Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
             int i = 0;
-            while (i < 4)
+            int timesWhileloopfinished = 0;
+            while (timesWhileloopfinished < 4)
             {
-                if (_playerCodes[OpponentID].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
+                if (_playerCodes[OpponentID].Substring(timesWhileloopfinished, 1).Equals(packet._message.Substring(i, 1)))
                 {
                     result += 10;
+                    packet._message = packet._message.Substring(i+1);
+                    i--;
                 }
                 else if (_playerCodes[OpponentID].Contains(packet._message.Substring(i, 1)))
                 {
                     result += 1;
+                    packet._message = packet._message.Substring(i + 1);
+                    i--;
                 }
                 i++;
+                timesWhileloopfinished++;
                 Console.WriteLine("Result has changed to: " + result);
             }
             if (result == 40)
@@ -167,8 +173,19 @@ namespace Server
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
                 SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\n Sadly, you have lost."));
             }
-            SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
-            SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
+            else
+            {
+                if (result < 10)
+                {
+                    SendPacket(new FM_Packet(packet._id, "CodeResult", "0" + result));
+                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message)); 
+                }
+                else
+                {
+                    SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
+                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message)); 
+                }
+            }          
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
