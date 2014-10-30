@@ -164,7 +164,7 @@ namespace FasterMindC
 
         internal void SetResultColor(byte _attempt, string result)
         {
-
+            this._myResultPanels[_attempt * 1].BackColor = Color.Red;
         }
     }
 }

@@ -202,11 +202,11 @@ namespace FasterMindC
                 if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
                 {
                     Debug.WriteLine("The number to edit is too big, resetting");
-                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                    _submitCode -= (short)(5 * Math.Pow(10, p - 1));
                 }
                 else
                 {
-                    _ownCode += (short)(Math.Pow(10, p - 1));
+                    _submitCode += (short)(Math.Pow(10, p - 1));
                     Debug.WriteLine("Changing Submitcode to: " + _ownCode);
                 }
             }
@@ -218,7 +218,7 @@ namespace FasterMindC
             {
                 if (_firstSubmit)
                 {
-                    if(_ownCode > 1111)
+                    if(!("" + _ownCode).Contains("0"))
                     {
                         SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                         _firstSubmit = false;
@@ -231,7 +231,7 @@ namespace FasterMindC
                 }
                 else
                 {
-                    if (_submitCode > 1111)
+                    if (!("" + _submitCode).Contains("0"))
                     {
                         SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
                         _gui.MoveCode(false, _attempt);

@@ -69,8 +69,8 @@ namespace Server
                                 return;
                             }
                             streamArray[_playerCount] = sslStream;
-                            _playerCount++;
                             SendPacket(new FM_Packet("ID", "" + _playerCount), sslStream);
+                            _playerCount++;
                             Console.WriteLine("Authentication succesfull.");
                             while (true)
                             {
@@ -149,16 +149,17 @@ namespace Server
             int i = 0;
             while (i < 4)
             {
-                i++;
                 if (_playerCodes[comparepacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
                 {
                     result += 10;
+                    i++;
                     break;
                 }
                 if (_playerCodes[comparepacket].Contains(packet._message.Substring(i, 1)))
                 {
                     result += 1;
                 }
+                i++;
             }
             SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
         }
@@ -166,7 +167,7 @@ namespace Server
         private void HandleInitialCodePacket(FM_Packet packet)
         {
             Console.WriteLine("Received code: " + packet._message + " from player " + packet._id);
-            _playerCodes[int.Parse(packet._id)-1] = packet._message;
+            _playerCodes[int.Parse(packet._id)] = packet._message;
             if (_playerCodes.Count(s => s != null) == MAX_PLAYERS)
             {
                 foreach (SslStream s in streamArray)
