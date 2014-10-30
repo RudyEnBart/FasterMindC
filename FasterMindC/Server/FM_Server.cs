@@ -131,34 +131,31 @@ namespace Server
 
         private void HandleNameChangePacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            int OpponentID = CheckID(packet);
+            SendPacket(packet, streamArray[OpponentID]);
         }
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
             int result = 0;
-            int comparepacket;
-            if (packet._id == "1")
-            {
-                comparepacket = 1;
-            }
-            else
-            {
-                comparepacket = 0;
-            }
+            int ComparePacket = CheckID(packet);
             int i = 0;
             while (i < 4)
             {
                 i++;
-                if (_playerCodes[comparepacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
+                if (_playerCodes[ComparePacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
                 {
                     result += 10;
                     break;
                 }
-                if (_playerCodes[comparepacket].Contains(packet._message.Substring(i, 1)))
+                if (_playerCodes[ComparePacket].Contains(packet._message.Substring(i, 1)))
                 {
                     result += 1;
                 }
+            }
+            if (result == 40)
+            {
+                SendPacket(new FM_Packet(ComparePacket + "", "GameLost", "You are a n00b and lost the game!"));
             }
             SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
         }
@@ -184,6 +181,20 @@ namespace Server
         public void SendPacket(FM_Packet packet, SslStream stream)
         {
             formatter.Serialize(stream, new JavaScriptSerializer().Serialize(packet));
+        }
+
+        public int CheckID(FM_Packet packet)
+        {
+            int OpponentID;
+            if (packet._id == "1")
+            {
+                OpponentID = 1;
+            }
+            else
+            {
+                OpponentID = 0;
+            }
+            return OpponentID;
         }
     }
 }

@@ -163,6 +163,7 @@ namespace FasterMindC
         public void NameButtonClick(object sender, EventArgs e, string name)
         {
             this._name = name;
+            SendPacket(new FM_Packet(_ID, "NameChange", name));
         }
 
         internal void InputCodeClicked(object sender, EventArgs e, int p)
