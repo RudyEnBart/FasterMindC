@@ -46,6 +46,10 @@ namespace FasterMindC
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             control._gui = new FM_Client_GUI(control);
+            Connection_Form form = new Connection_Form();
+            form.Show();
+            form.TopMost = true;
+            control._gui.Enabled = false;
             Application.Run(control._gui);
         }
 
@@ -84,6 +88,7 @@ namespace FasterMindC
             }
             new Thread(() =>
             {
+
                 while (true)
                 {
                     String dataString = "";

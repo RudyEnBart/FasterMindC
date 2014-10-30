@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connection_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Connection_Form.Designer.cs">
+      <DependentUpon>Connection_Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="FM_Client_GUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -55,6 +61,9 @@
     </Compile>
     <Compile Include="FM_Client_Controller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Connection_Form.resx">
+      <DependentUpon>Connection_Form.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FM_Client_GUI.resx">
       <DependentUpon>FM_Client_GUI.cs</DependentUpon>
     </EmbeddedResource>
