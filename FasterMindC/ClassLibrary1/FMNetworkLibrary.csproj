@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FM_Settings.cs" />
     <Compile Include="ENUMS.cs" />
     <Compile Include="FM_Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

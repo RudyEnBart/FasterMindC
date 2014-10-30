@@ -105,6 +105,14 @@ namespace Server
                                 }
                             } // end While
                         }
+                        else
+                        {
+                            FM_Packet p = new FM_Packet("Connect", "All players have connected");
+                            foreach (SslStream s in streamArray)
+                            {
+                                SendPacket(p, s);
+                            }
+                        }
                     }).Start();
                 }
             }
@@ -157,7 +165,7 @@ namespace Server
             if (result == 40)
             {
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
-                SendPacket(new FM_Packet(ComparePacket + "", "GameLost", "You are a n00b and lost the game!"));
+                SendPacket(new FM_Packet(ComparePacket + "", "GameLost", "Your opponent guessed your code!\n Sadly, you have lost."));
             }
             SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
         }

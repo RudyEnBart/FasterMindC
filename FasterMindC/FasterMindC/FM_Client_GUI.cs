@@ -41,6 +41,19 @@ namespace FasterMindC
                     }
                 }
             }
+            init();
+        }
+
+        public void init()
+        {
+            foreach(Panel p in _myPanels)
+            {
+                p.BackColor = Color.White;
+            }
+            foreach(Panel p in _myResultPanels)
+            {
+                p.BackColor = Color.Black;
+            }
         }
 
         private void NameButtonClicked(object sender, EventArgs e)
@@ -114,7 +127,7 @@ namespace FasterMindC
             {
                 Console.WriteLine("Submit number: " + attempt);
                 Console.WriteLine("Panel number: " + (8 + (attempt * 4) + 1) + " - Panel name: " + this._myPanels[8 + (attempt * 4) + 1].Name);
-                this._myPanels[8 + (attempt * 4)].BackColor = this._input1.BackColor;
+                this._myPanels[8 + (attempt * 4) + 0].BackColor = this._input1.BackColor;
                 this._myPanels[8 + (attempt * 4) + 1].BackColor = this._input2.BackColor;
                 this._myPanels[8 + (attempt * 4) + 2].BackColor = this._input3.BackColor;
                 this._myPanels[8 + (attempt * 4) + 3].BackColor = this._input4.BackColor;
@@ -164,7 +177,23 @@ namespace FasterMindC
 
         internal void SetResultColor(byte _attempt, string result)
         {
-            this._myResultPanels[_attempt * 1].BackColor = Color.Red;
+            Console.WriteLine(result);
+            int correct = Int32.Parse(result.Substring(0, 1));
+            int halfcorrect = Int32.Parse(result.Substring(1, 1));
+            Console.WriteLine("correct is: " + correct + " - halfcorrect is: " + halfcorrect);
+            int index = 0;
+            for (int i = 0; i < correct; i++) 
+            {
+                this._myResultPanels[((_attempt - 1) * 4) + index].BackColor = Color.Red;
+                Console.WriteLine("Coloring resultpanel " + _attempt * 4 + index + " to RED");
+                index++;
+            }
+            for (int i = 0; i < halfcorrect; i++)
+            {
+                this._myResultPanels[((_attempt - 1) * 4) + index].BackColor = Color.White;
+                Console.WriteLine("Coloring resultpanel " + _attempt * 4 + index + " to WHITE");
+                index++;
+            }
         }
 
         delegate void ChangeOpponentNameDel(string name);
@@ -180,6 +209,14 @@ namespace FasterMindC
             {
                 OpponentName.Text = name;
             }
+        }
+
+        public void SetOpponentTry(int attempt, string code)
+        {
+            this._myPanels[8 + 36 + (attempt * 4) + 0].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(0)));
+            this._myPanels[8 + 36 + (attempt * 4) + 1].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(1)));
+            this._myPanels[8 + 36 + (attempt * 4) + 2].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(2)));
+            this._myPanels[8 + 36 + (attempt * 4) + 3].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(3)));
         }
     }
 }

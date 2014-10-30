@@ -1,20 +1,20 @@
-﻿using System;
+﻿using FMNetworkLibrary;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
-using System.Threading;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using FMNetworkLibrary;
-using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace FasterMindC
 {
@@ -38,8 +38,9 @@ namespace FasterMindC
         private string _opponentCode;
         private string _opponentName;
 
-        private string _serverIP = "127.0.0.1";
-        private byte _serverPort = 42;
+        private string _serverIP = FM_Settings.SERVERIP;
+        private byte _serverPort = FM_Settings.SERVERPORT;
+
         static void Main()
         {
             FM_Client_Controller control = new FM_Client_Controller();
@@ -51,8 +52,7 @@ namespace FasterMindC
 
         public FM_Client_Controller()
         {
-            this._ownCode = 0;
-            _firstSubmit = true;
+            init();
             try
             {
                 _serverConnection = new TcpClient();
@@ -61,7 +61,7 @@ namespace FasterMindC
                     new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
                 try
                 {
-                    _sslServerConnection.AuthenticateAsClient("127.0.0.1", null, SslProtocols.Tls, false);
+                    _sslServerConnection.AuthenticateAsClient(_serverIP, null, SslProtocols.Tls, false);
                     _reader = new StreamReader(_sslServerConnection, Encoding.ASCII);
                 }
                 catch (Exception e1)
@@ -100,8 +100,8 @@ namespace FasterMindC
                             case "ID":
                                 HandleIDPacket(packet);
                                 break;
-                            case "CodeSubmit":
-                                HandleCodeSubmitPacket(packet);
+                            case "OpponentSubmit":
+                                HandleOpponentSubmitPacket(packet);
                                 break;
                             case "CodeResult" :
                                 HandleCodeResultPacket(packet);
@@ -118,6 +118,9 @@ namespace FasterMindC
                             case "GameLost" :
                                 HandleGameLostPacket(packet);
                                 break;
+                            case "GameTie" :
+                                HandleGameTiePacket(packet);
+                                break;
                             default: //nothing
                                 break;
                         }
@@ -126,28 +129,72 @@ namespace FasterMindC
             }).Start();
         }
 
+        private void HandleGameTiePacket(FM_Packet packet)
+        {
+            DialogResult result = MessageBox.Show("The game has ended in a tie... \n Do you wish to play again?", "Tie", MessageBoxButtons.YesNo);
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    init();
+                    break;
+                case DialogResult.No:
+                    Application.Exit();
+                    break;
+            }
+        }
+
+        public void init()
+        {
+            _attempt = 0;
+            _firstSubmit = true;
+            _ownCode = 0;
+            if(_gui != null)
+            {
+                _gui.init();
+            }
+        }
+
         private void HandleCodeResultPacket(FM_Packet packet)
         {
+            _gui.SetResultColor(_attempt, packet._message);
             // all 10s are red all 1s are white
             if(packet._message == "40")
             {
-                MessageBox.Show("FUCK YEAH!");
+                DialogResult result = MessageBox.Show("YOU WIN! \n Do you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
+                switch(result)
+                {
+                    case DialogResult.Yes:
+                        init();
+                        break;
+                    case DialogResult.No:
+                        Application.Exit();
+                        break;
+                }
             }
-            else
+            else if(_attempt == 9)
             {
-                _gui.SetResultColor(_attempt, packet._message);
+                MessageBox.Show("You failed to guess your opponents code :( \n Waiting for opponent to finish", "Waiting for opponent");
             }
         }
 
         private void HandleGameLostPacket(FM_Packet packet)
         {
-            MessageBox.Show(packet._message);
+            DialogResult result = MessageBox.Show(packet._message + "\n Do you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    init();
+                    break;
+                case DialogResult.No:
+                    Application.Exit();
+                    break;
+            }
         }
 
         private void HandleReadyPacket(FM_Packet packet)
         {
             //TODO make both clients start at the same time
-            Debug.WriteLine("START!");
+            MessageBox.Show("START!");
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)
@@ -162,7 +209,7 @@ namespace FasterMindC
             //Set Label opponent gui.
         }
 
-        private void HandleCodeSubmitPacket(FM_Packet packet)
+        private void HandleOpponentSubmitPacket(FM_Packet packet)
         {
             _opponentCode = packet._message;
             //Set Color doorsturen naar gui.
