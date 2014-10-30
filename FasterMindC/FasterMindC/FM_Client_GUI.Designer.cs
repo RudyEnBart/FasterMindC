@@ -1321,6 +1321,7 @@
             this.Controls.Add(this.submitCodeButton);
             this.Controls.Add(this.shapeContainer1);
             this.Name = "FM_Client_GUI";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FasterMind";
             this.ResumeLayout(false);
             this.PerformLayout();
