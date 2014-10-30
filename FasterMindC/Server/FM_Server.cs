@@ -136,7 +136,31 @@ namespace Server
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
-            
+            int result = 0;
+            int comparepacket;
+            if (packet._id == "1")
+            {
+                comparepacket = 1;
+            }
+            else
+            {
+                comparepacket = 0;
+            }
+            int i = 0;
+            while (i < 4)
+            {
+                i++;
+                if (_playerCodes[comparepacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
+                {
+                    result += 10;
+                    break;
+                }
+                if (_playerCodes[comparepacket].Contains(packet._message.Substring(i, 1)))
+                {
+                    result += 1;
+                }
+            }
+            SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
