@@ -173,6 +173,7 @@
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(176, 20);
             this.nameBox.TabIndex = 1;
+            this.nameBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NameEnterPressed);
             // 
             // _code1_1
             // 

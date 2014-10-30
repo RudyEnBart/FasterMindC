@@ -141,5 +141,14 @@ namespace FasterMindC
         {
 
         }
+
+        private void NameEnterPressed(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                PlayerName.Text = nameBox.Text;
+                _controller.NameButtonClick(sender, e, PlayerName.Text);
+            }
+        }
     }
 }
