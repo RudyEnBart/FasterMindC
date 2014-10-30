@@ -8,7 +8,9 @@ namespace FMNetworkLibrary
 {
     public static class FM_Settings
     {
-        public const string SERVERIP = "127.0.0.1";
+        public const string SERVERIP = "192.168.1.107";
+        //public const string SERVERIP = "127.0.0.1";
+
         public const byte SERVERPORT = 42;
     }
 }

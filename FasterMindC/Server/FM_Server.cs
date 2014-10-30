@@ -11,6 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows.Forms;
 using System.Web.Script.Serialization;
+using System.Text;
 
 namespace Server
 {
@@ -36,7 +37,7 @@ namespace Server
                 X509Certificate2 _certificate = new X509Certificate2("C:\\certs\\testpfx.pfx", "FIETSA3");
                 IPAddress _localIP = IPAddress.Parse("127.0.0.1");
                 byte _port = 42;
-                _server = new TcpListener(_localIP, _port);
+                _server = new TcpListener(/*_localIP,*/ _port);
                 _server.Start();
                 Console.WriteLine("Waiting for connection...");
 
@@ -151,30 +152,72 @@ namespace Server
             int result = 0;
             int OpponentID = CheckID(packet);
             Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
-            int i = 0;
-            int timesWhileloopfinished = 0;
-            while (timesWhileloopfinished < 4)
+            //int timesWhileloopfinished = 0;
+            string tempOpponentCode = _playerCodes[OpponentID];
+            Console.WriteLine("tempcode is: " + tempOpponentCode + "and playercode is: " + _playerCodes[OpponentID]);
+            string checkCode = packet._message;
+            StringBuilder sbOppCode = new StringBuilder(tempOpponentCode);
+            StringBuilder sbCheckCode = new StringBuilder(checkCode);
+
+            for (int i = 0; i < tempOpponentCode.Length; i++ )
             {
-                if (_playerCodes[OpponentID].Substring(timesWhileloopfinished, 1).Equals(packet._message.Substring(i, 1)))
+                if (tempOpponentCode.Substring(i, 1).Equals(checkCode.Substring(i, 1)))
                 {
+                    Console.WriteLine("+10!");
+                    sbOppCode[i] = 'x';
+                    tempOpponentCode = sbOppCode.ToString();
+                    sbCheckCode[i] = 'y';
+                    checkCode = sbCheckCode.ToString();
                     result += 10;
-                    packet._message = packet._message.Substring(i+1);
-                    i--;
                 }
-                else if (_playerCodes[OpponentID].Contains(packet._message.Substring(i, 1)))
-                {
-                    result += 1;
-                    packet._message = packet._message.Substring(i + 1);
-                    i--;
-                }
-                i++;
-                timesWhileloopfinished++;
                 Console.WriteLine("Result has changed to: " + result);
+                Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
             }
+            for (int i = 0; i < tempOpponentCode.Length; i++)
+            {
+                if (tempOpponentCode.Contains(checkCode.Substring(i, 1)))
+                {
+                    Console.WriteLine("+1!");
+                    int index = tempOpponentCode.IndexOf(checkCode.Substring(i, 1));
+                    sbOppCode[index] = 'x';
+                    tempOpponentCode = sbOppCode.ToString();
+                    sbCheckCode[i] = 'y';
+                    checkCode = sbCheckCode.ToString();
+                    result += 1;
+                }
+                Console.WriteLine("Result has changed to: " + result);
+                Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
+            }
+
+            /*
+                while (timesWhileloopfinished < tempOpponentCode.Length)
+                {
+                    Console.WriteLine("checking: " + tempOpponentCode.Substring(0, 1) + " against: " + checkCode.Substring(0, 1));
+                    if (tempOpponentCode.Substring(0, 1).Equals(checkCode.Substring(0, 1)))
+                    {
+                        Console.WriteLine("+10!");
+                        result += 10;
+                        tempOpponentCode = tempOpponentCode.Remove(0, 1);
+                        timesWhileloopfinished--;
+                    }
+                    else if (tempOpponentCode.Contains(checkCode.Substring(0, 1)))
+                    {
+                        Console.WriteLine("+1!");
+                        result += 1;
+                        tempOpponentCode = tempOpponentCode.Remove(0, 1);
+                        timesWhileloopfinished--;
+                        i--;
+                    }
+                    checkCode = checkCode.Remove(0, 1);
+                    timesWhileloopfinished++;
+                }*/
+
             if (result == 40)
             {
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
+                SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
                 SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
+                _playerCodes = new string[MAX_PLAYERS];
             }
             else
             {

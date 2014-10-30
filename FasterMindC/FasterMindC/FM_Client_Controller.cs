@@ -22,8 +22,8 @@ namespace FasterMindC
     {
 
         private string _name { get; set; }
-        private short _ownCode { get; set; }
-        private short _submitCode { get; set; }
+        private int _ownCode { get; set; }
+        private int _submitCode { get; set; }
         private bool _firstSubmit { get; set; }
         private byte _attempt { get; set; }
         private string _ID;
@@ -35,12 +35,12 @@ namespace FasterMindC
         private SslStream _sslServerConnection;
         private StreamReader _reader;
         private BinaryFormatter formatter = new BinaryFormatter();
-        private string _intialCodeFromOpponent;
         private string _opponentCode;
         private string _opponentName;
 
         private string _serverIP = FM_Settings.SERVERIP;
         private byte _serverPort = FM_Settings.SERVERPORT;
+        private int _opTry;
 
         static void Main()
         {
@@ -139,6 +139,7 @@ namespace FasterMindC
 
         private void HandleGameTiePacket(FM_Packet packet)
         {
+            _gui.Enabled = false;
             DialogResult result = MessageBox.Show("The game has ended in a tie... \nDo you wish to play again?", "Tie", MessageBoxButtons.YesNo);
             switch (result)
             {
@@ -156,16 +157,31 @@ namespace FasterMindC
             _attempt = 0;
             _firstSubmit = true;
             _ownCode = 0;
-            if (_gui != null)
+            _opTry = 0;
+            InitializeGUI();
+            SendConnectPacket();
+        }
+
+        delegate void InitGUIDel();
+        private void InitializeGUI()
+        {
+            if (_gui == null)
             {
+                _gui = new FM_Client_GUI(this);
+            }
+            if(_gui.InvokeRequired)
+            {
+                InitGUIDel d = new InitGUIDel(InitializeGUI);
+                _gui.Invoke(d);
+            }
+            else
+            {
+                _conForm = new Connection_Form();
+                _conForm.Show();
+                _conForm.TopMost = true;
+                _gui.Enabled = false;
                 _gui.init();
             }
-            _conForm = new Connection_Form();
-            _conForm.Show();
-            _conForm.TopMost = true; 
-            _gui = new FM_Client_GUI(this);
-            _gui.Enabled = false;
-            SendConnectPacket();
         }
 
         delegate void HandleConnectPacketDel();
@@ -181,6 +197,19 @@ namespace FasterMindC
             {
                 _conForm.Close();
                 _gui.Enabled = true;
+                MessageBox.Show("The goal of the game is to guess the code of your opponent.\n" +
+                "By clicking the squares at the bottom, they will change colors to signify a code.\n" + 
+                "The first code you submit will be the code your opponent needs to guess.\n" + 
+                "After that, every code you submit will be a guess towards your opponent's code.\n" + 
+                "Your guesses will be on the left side and your opponent's guesses on the right.\n" +
+                "Next to your guesses you will also see how many of your colors were:\n" +
+                "- The right color and in the right spot (RED).\n" +
+                "- The right color but in the wrong spot (WHITE).\n\n" +
+                "The colors that can make up a code are: Red, Blue, Green, Yellow, Pink and Cyan.\n" +
+                "White counts as an empty space and is not an allowed color within the codes.\n" +
+                "The first player to guess the opponent's code within the 9 guesses, WINS!\n" +
+                "Be the fastest and smartest. Prove that you have the... FASTERMIND!", 
+                "Welcome to... FASTERMIND!");
             }
         }
 
@@ -190,6 +219,7 @@ namespace FasterMindC
             // all 10s are red all 1s are white
             if (packet._message == "40")
             {
+                _gui.Enabled = false;
                 DialogResult result = MessageBox.Show("YOU WIN! \nDo you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
                 switch (result)
                 {
@@ -203,12 +233,14 @@ namespace FasterMindC
             }
             else if (_attempt == 9)
             {
+                _gui.Enabled = false;
                 MessageBox.Show("You failed to guess your opponents code :( \nWaiting for opponent to finish", "Waiting for opponent");
             }
         }
 
         private void HandleGameLostPacket(FM_Packet packet)
         {
+            _gui.Enabled = false;
             DialogResult result = MessageBox.Show(packet._message + "\nDo you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
             switch (result)
             {
@@ -242,7 +274,8 @@ namespace FasterMindC
         private void HandleOpponentSubmitPacket(FM_Packet packet)
         {
             _opponentCode = packet._message;
-            //Set Color doorsturen naar gui.
+            _gui.SetOpponentTry(_opTry, packet._message);
+            _opTry++;
         }
 
         private void HandleIDPacket(FM_Packet packet)
@@ -277,7 +310,7 @@ namespace FasterMindC
         {
             if (_firstSubmit)
             {
-                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                if ((int)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
                 {
                     _ownCode -= (short)(5 * Math.Pow(10, p - 1));
                 }
@@ -288,7 +321,7 @@ namespace FasterMindC
             }
             else
             {
-                if ((short)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                if ((int)(_submitCode / Math.Pow(10, p - 1)) % 10 == 6)
                 {
                     _submitCode -= (short)(5 * Math.Pow(10, p - 1));
                 }
@@ -313,7 +346,7 @@ namespace FasterMindC
                     }
                     else
                     {
-                        MessageBox.Show("Please fill in all the colors before submitting");
+                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
                     }
                 }
                 else
@@ -327,7 +360,7 @@ namespace FasterMindC
                     }
                     else
                     {
-                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color");
+                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
                     }
                 }
             }

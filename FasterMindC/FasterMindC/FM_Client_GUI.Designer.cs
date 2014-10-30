@@ -1323,6 +1323,7 @@
             this.Name = "FM_Client_GUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FasterMind";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GUI_Closed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

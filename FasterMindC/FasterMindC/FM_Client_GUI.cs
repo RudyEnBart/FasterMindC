@@ -15,10 +15,10 @@ namespace FasterMindC
     public partial class FM_Client_GUI : Form
     {
         private FM_Client_Controller _controller;
-        private byte code1 = 6;
-        private byte code2 = 6;
-        private byte code3 = 6;
-        private byte code4 = 6;
+        private byte code1;
+        private byte code2;
+        private byte code3;
+        private byte code4;
         private List<Panel> _myPanels = new List<Panel>();
         private List<Panel> _myResultPanels = new List<Panel>();
         public FM_Client_GUI(FM_Client_Controller controller)
@@ -52,6 +52,7 @@ namespace FasterMindC
             {
                 p.BackColor = Color.Black;
             }
+            ResetCodes();
         }
 
         private void NameButtonClicked(object sender, EventArgs e)
@@ -204,10 +205,15 @@ namespace FasterMindC
 
         public void SetOpponentTry(int attempt, string code)
         {
-            this._myPanels[8 + 36 + (attempt * 4) + 0].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(0)));
-            this._myPanels[8 + 36 + (attempt * 4) + 1].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(1)));
-            this._myPanels[8 + 36 + (attempt * 4) + 2].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(2)));
-            this._myPanels[8 + 36 + (attempt * 4) + 3].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(3)));
+            this._myPanels[8 + 36 + (attempt * 4) + 3].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(0, 1)) - 1);
+            this._myPanels[8 + 36 + (attempt * 4) + 2].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(1, 1)) - 1);
+            this._myPanels[8 + 36 + (attempt * 4) + 1].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(2, 1)) - 1);
+            this._myPanels[8 + 36 + (attempt * 4) + 0].BackColor = ENUMS.GetColor((ENUMS.color)Int32.Parse(code.Substring(3, 1)) - 1);
+        }
+
+        private void GUI_Closed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
