@@ -29,6 +29,7 @@ namespace FasterMindC
         private string _ID;
 
         private FM_Client_GUI _gui;
+        private Connection_Form _conForm;
 
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
@@ -47,6 +48,10 @@ namespace FasterMindC
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             control._gui = new FM_Client_GUI(control);
+            control._conForm = new Connection_Form();
+            control._conForm.Show();
+            control._conForm.TopMost = true;
+            control._gui.Enabled = false;
             Application.Run(control._gui);
         }
 
@@ -84,6 +89,7 @@ namespace FasterMindC
             }
             new Thread(() =>
             {
+
                 while (true)
                 {
                     String dataString = "";
@@ -108,6 +114,9 @@ namespace FasterMindC
                                 break;
                             case "NameChange":
                                 HandleNameChangePacket(packet);
+                                break;
+                            case "Connect":
+                                HandleConnectPacket(packet);
                                 break;
                             case "Disconnect":
                                 HandleDisconnectPacket(packet);
@@ -148,10 +157,16 @@ namespace FasterMindC
             _attempt = 0;
             _firstSubmit = true;
             _ownCode = 0;
-            if(_gui != null)
+            if (_gui != null)
             {
                 _gui.init();
             }
+        }
+
+        private void HandleConnectPacket(FM_Packet packet)
+        {
+            _conForm.Close();
+            _gui.Enabled = true;
         }
 
         private void HandleCodeResultPacket(FM_Packet packet)

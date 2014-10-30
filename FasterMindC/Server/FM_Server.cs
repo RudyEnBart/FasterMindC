@@ -146,16 +146,16 @@ namespace Server
         private void HandleCodeSubmitPacket(FM_Packet packet)
         {
             int result = 0;
-            int ComparePacket = CheckID(packet);
-            Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[ComparePacket]);
+            int OpponentID = CheckID(packet);
+            Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
             int i = 0;
             while (i < 4)
             {
-                if (_playerCodes[ComparePacket].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
+                if (_playerCodes[OpponentID].Substring(i, 1).Equals(packet._message.Substring(i, 1)))
                 {
                     result += 10;
                 }
-                else if (_playerCodes[ComparePacket].Contains(packet._message.Substring(i, 1)))
+                else if (_playerCodes[OpponentID].Contains(packet._message.Substring(i, 1)))
                 {
                     result += 1;
                 }
@@ -165,9 +165,10 @@ namespace Server
             if (result == 40)
             {
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
-                SendPacket(new FM_Packet(ComparePacket + "", "GameLost", "Your opponent guessed your code!\n Sadly, you have lost."));
+                SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\n Sadly, you have lost."));
             }
             SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
+            SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
