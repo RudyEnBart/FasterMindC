@@ -139,7 +139,7 @@ namespace FasterMindC
 
         private void HandleGameTiePacket(FM_Packet packet)
         {
-            DialogResult result = MessageBox.Show("The game has ended in a tie... \n Do you wish to play again?", "Tie", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("The game has ended in a tie... \nDo you wish to play again?", "Tie", MessageBoxButtons.YesNo);
             switch (result)
             {
                 case DialogResult.Yes:
@@ -190,7 +190,7 @@ namespace FasterMindC
             // all 10s are red all 1s are white
             if (packet._message == "40")
             {
-                DialogResult result = MessageBox.Show("YOU WIN! \n Do you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show("YOU WIN! \nDo you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
                 switch (result)
                 {
                     case DialogResult.Yes:
@@ -203,13 +203,13 @@ namespace FasterMindC
             }
             else if (_attempt == 9)
             {
-                MessageBox.Show("You failed to guess your opponents code :( \n Waiting for opponent to finish", "Waiting for opponent");
+                MessageBox.Show("You failed to guess your opponents code :( \nWaiting for opponent to finish", "Waiting for opponent");
             }
         }
 
         private void HandleGameLostPacket(FM_Packet packet)
         {
-            DialogResult result = MessageBox.Show(packet._message + "\n Do you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show(packet._message + "\nDo you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
             switch (result)
             {
                 case DialogResult.Yes:

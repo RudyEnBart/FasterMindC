@@ -174,7 +174,7 @@ namespace Server
             if (result == 40)
             {
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
-                SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\n Sadly, you have lost."));
+                SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
             }
             else
             {
