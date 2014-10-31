@@ -66,7 +66,7 @@ namespace FasterMindC
             _controller.SubmitButtonClicked(sender, e);
         }
 
-        private void InputCode1Clicked(object sender, EventArgs e)
+        private void InputCode1Clicked(object sender, MouseEventArgs e)
         {
             code1++;
             if (code1 > 5)
@@ -77,7 +77,7 @@ namespace FasterMindC
             _controller.InputCodeClicked(sender, e, 1);
         }
 
-        private void InputCode2Clicked(object sender, EventArgs e)
+        private void InputCode2Clicked(object sender, MouseEventArgs e)
         {
             code2++;
             if (code2 > 5)
@@ -88,7 +88,7 @@ namespace FasterMindC
             _controller.InputCodeClicked(sender, e, 2);
         }
 
-        private void InputCode3Clicked(object sender, EventArgs e)
+        private void InputCode3Clicked(object sender, MouseEventArgs e)
         {
             code3++;
             if (code3 > 5)
@@ -99,7 +99,7 @@ namespace FasterMindC
             _controller.InputCodeClicked(sender, e, 3);
         }
 
-        private void InputCode4Clicked(object sender, EventArgs e)
+        private void InputCode4Clicked(object sender, MouseEventArgs e)
         {
             code4++;
             if (code4 > 5)
@@ -155,11 +155,6 @@ namespace FasterMindC
             code2 = 6;
             code3 = 6;
             code4 = 6;
-        }
-
-        private void _code1_4_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void NameEnterPressed(object sender, KeyEventArgs e)

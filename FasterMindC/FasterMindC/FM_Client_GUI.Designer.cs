@@ -785,7 +785,7 @@
             this._input4.Name = "_input4";
             this._input4.Size = new System.Drawing.Size(45, 44);
             this._input4.TabIndex = 116;
-            this._input4.Click += new System.EventHandler(this.InputCode4Clicked);
+            this._input4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.InputCode4Clicked);
             // 
             // _input3
             // 
@@ -794,7 +794,7 @@
             this._input3.Name = "_input3";
             this._input3.Size = new System.Drawing.Size(45, 44);
             this._input3.TabIndex = 115;
-            this._input3.Click += new System.EventHandler(this.InputCode3Clicked);
+            this._input3.MouseDown += new System.Windows.Forms.MouseEventHandler(this.InputCode3Clicked);
             // 
             // _input2
             // 
@@ -803,7 +803,7 @@
             this._input2.Name = "_input2";
             this._input2.Size = new System.Drawing.Size(45, 44);
             this._input2.TabIndex = 114;
-            this._input2.Click += new System.EventHandler(this.InputCode2Clicked);
+            this._input2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.InputCode2Clicked);
             // 
             // _input1
             // 
@@ -812,7 +812,7 @@
             this._input1.Name = "_input1";
             this._input1.Size = new System.Drawing.Size(45, 44);
             this._input1.TabIndex = 113;
-            this._input1.Click += new System.EventHandler(this.InputCode1Clicked);
+            this._input1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.InputCode1Clicked);
             // 
             // label4
             // 
