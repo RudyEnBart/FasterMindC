@@ -193,7 +193,10 @@ namespace Server
 
         private void HandleDisconnectPacket(FM_Packet packet)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Player with ID " + packet._id + " has disconnected");
+            _playerCount--;
+            _names[Int16.Parse(packet._id)] = "Anonymous";
+            _wins[Int16.Parse(packet._id)] = 0;
         }
 
         private void HandleNameChangePacket(FM_Packet packet)

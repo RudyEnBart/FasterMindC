@@ -50,11 +50,12 @@ namespace FasterMindC
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             control.init();
-            Application.Run(control._gui);
+            Application.Run(control._gui); 
         }
 
         public FM_Client_Controller()
         {
+            Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
             try
             {
                 _serverConnection = new TcpClient();
@@ -163,6 +164,7 @@ namespace FasterMindC
             _attempt = 0;
             _firstSubmit = true;
             _ownCode = 0;
+            _submitCode = 0;
             _opTry = 0;
             InitializeGUI();
             SendConnectPacket();
@@ -415,11 +417,13 @@ namespace FasterMindC
             }
         }
 
-
-
         internal void GetHighscores()
         {
             SendPacket(new FM_Packet(_ID, "Highscores", "Request for highscores"));
+        }
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            SendPacket(new FM_Packet(_ID, "Disconnect", "Disconnecting"));
         }
     }
 }
