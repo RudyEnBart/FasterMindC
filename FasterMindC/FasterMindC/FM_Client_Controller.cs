@@ -205,10 +205,11 @@ namespace FasterMindC
             {
                 _conForm.Close();
                 _gui.Enabled = true;
+                _gui.Focus();
                 MessageBox.Show("The goal of the game is to guess the code of your opponent.\n" +
-                "By clicking the squares at the bottom, they will change colors to signify a code.\n" + 
-                "The first code you submit will be the code your opponent needs to guess.\n" + 
-                "After that, every code you submit will be a guess towards your opponent's code.\n" + 
+                "By clicking the squares at the bottom, they will change colors to signify a code.\n" +
+                "The first code you submit will be the code your opponent needs to guess.\n" +
+                "After that, every code you submit will be a guess towards your opponent's code.\n" +
                 "Your guesses will be on the left side and your opponent's guesses on the right.\n" +
                 "Next to your guesses you will also see how many of your colors were:\n" +
                 "- The right color and in the right spot (RED).\n" +
@@ -216,8 +217,9 @@ namespace FasterMindC
                 "The colors that can make up a code are: Red, Blue, Green, Yellow, Pink and Cyan.\n" +
                 "White counts as an empty space and is not an allowed color within the codes.\n" +
                 "The first player to guess the opponent's code within the 9 guesses, WINS!\n" +
-                "Be the fastest and smartest. Prove that you have the... FASTERMIND!", 
+                "Be the fastest and smartest. Prove that you have the... FASTERMIND!",
                 "Welcome to... FASTERMIND!");
+                _gui.Focus();
             }
         }
 
