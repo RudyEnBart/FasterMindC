@@ -215,14 +215,52 @@ namespace FasterMindC
             }
         }
 
+        private delegate void HandleCodeResultPacketDel(FM_Packet packet);
         private void HandleCodeResultPacket(FM_Packet packet)
         {
-            _gui.SetResultColor(_attempt, packet._message);
-            // all 10s are red all 1s are white
-            if (packet._message == "40")
+            if (_gui.InvokeRequired)
+            {
+                HandleCodeResultPacketDel d = new HandleCodeResultPacketDel(HandleCodeResultPacket);
+                _gui.Invoke(d, new object[]{packet});
+            }
+            else
+            {
+                _gui.SetResultColor(_attempt, packet._message);
+                // all 10s are red all 1s are white
+                if (packet._message == "40")
+                {
+                    _gui.Enabled = false;
+                    DialogResult result = MessageBox.Show("YOU WIN! \nDo you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
+                    switch (result)
+                    {
+                        case DialogResult.Yes:
+                            init();
+                            break;
+                        case DialogResult.No:
+                            Application.Exit();
+                            break;
+                    }
+                }
+                else if (_attempt == 9)
+                {
+                    _gui.Enabled = false;
+                    MessageBox.Show("You failed to guess your opponents code :( \nWaiting for opponent to finish", "Waiting for opponent");
+                }
+            }
+        }
+
+        private delegate void HandleGameLostPacketDel(FM_Packet packet);
+        private void HandleGameLostPacket(FM_Packet packet)
+        {
+            if (_gui.InvokeRequired)
+            {
+                HandleGameLostPacketDel d = new HandleGameLostPacketDel(HandleGameLostPacket);
+                _gui.Invoke(d, new object[] { packet });
+            }
+            else
             {
                 _gui.Enabled = false;
-                DialogResult result = MessageBox.Show("YOU WIN! \nDo you wish to play again?", "You are the winner!", MessageBoxButtons.YesNo);
+                DialogResult result = MessageBox.Show(packet._message + "\nDo you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
                 switch (result)
                 {
                     case DialogResult.Yes:
@@ -232,26 +270,6 @@ namespace FasterMindC
                         Application.Exit();
                         break;
                 }
-            }
-            else if (_attempt == 9)
-            {
-                _gui.Enabled = false;
-                MessageBox.Show("You failed to guess your opponents code :( \nWaiting for opponent to finish", "Waiting for opponent");
-            }
-        }
-
-        private void HandleGameLostPacket(FM_Packet packet)
-        {
-            _gui.Enabled = false;
-            DialogResult result = MessageBox.Show(packet._message + "\nDo you wish to play again?", "You lose!", MessageBoxButtons.YesNo);
-            switch (result)
-            {
-                case DialogResult.Yes:
-                    init();
-                    break;
-                case DialogResult.No:
-                    Application.Exit();
-                    break;
             }
         }
         
