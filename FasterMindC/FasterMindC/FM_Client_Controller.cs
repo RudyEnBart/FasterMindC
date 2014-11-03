@@ -49,10 +49,6 @@ namespace FasterMindC
             FM_Client_Controller control = new FM_Client_Controller();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            /*control._conForm = new Connection_Form();
-            control._conForm.Show();
-            control._conForm.TopMost = true;
-            control._gui.Enabled = false;*/
             control.init();
             Application.Run(control._gui);
         }
@@ -131,12 +127,20 @@ namespace FasterMindC
                             case "GameTie":
                                 HandleGameTiePacket(packet);
                                 break;
+                            case "Highscores":
+                                HandleHighscoresPacket(packet);
+                                break;
                             default: //nothing
                                 break;
                         }
                     }
                 }
             }).Start();
+        }
+
+        private void HandleHighscoresPacket(FM_Packet packet)
+        {
+            MessageBox.Show(packet._message);
         }
 
         private void HandleGameTiePacket(FM_Packet packet)
@@ -409,5 +413,10 @@ namespace FasterMindC
         }
 
 
+
+        internal void GetHighscores()
+        {
+            SendPacket(new FM_Packet(_ID, "Highscores", "Request for highscores"));
+        }
     }
 }

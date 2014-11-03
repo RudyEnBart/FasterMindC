@@ -210,5 +210,10 @@ namespace FasterMindC
         {
             Application.Exit();
         }
+
+        private void highscoreButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            _controller.GetHighscores();
+        }
     }
 }

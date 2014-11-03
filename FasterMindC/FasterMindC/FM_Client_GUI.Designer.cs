@@ -155,6 +155,7 @@
             this.lineShape2 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.lineShape1 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.submitNameButton = new System.Windows.Forms.Button();
+            this.highscoreButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // submitCodeButton
@@ -1190,12 +1191,23 @@
             this.submitNameButton.UseVisualStyleBackColor = true;
             this.submitNameButton.Click += new System.EventHandler(this.NameButtonClicked);
             // 
+            // highscoreButton
+            // 
+            this.highscoreButton.Location = new System.Drawing.Point(436, 13);
+            this.highscoreButton.Name = "highscoreButton";
+            this.highscoreButton.Size = new System.Drawing.Size(75, 23);
+            this.highscoreButton.TabIndex = 147;
+            this.highscoreButton.Text = "Highscores";
+            this.highscoreButton.UseVisualStyleBackColor = true;
+            this.highscoreButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.highscoreButton_MouseClick);
+            // 
             // FM_Client_GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(839, 590);
+            this.Controls.Add(this.highscoreButton);
             this.Controls.Add(this.submitNameButton);
             this.Controls.Add(this.PlayerName);
             this.Controls.Add(this._input1);
@@ -1458,6 +1470,7 @@
         private Microsoft.VisualBasic.PowerPacks.LineShape lineShape2;
         private Microsoft.VisualBasic.PowerPacks.LineShape lineShape1;
         private System.Windows.Forms.Button submitNameButton;
+        private System.Windows.Forms.Button highscoreButton;
     }
 }
 
