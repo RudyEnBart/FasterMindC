@@ -30,6 +30,8 @@ namespace FasterMindC
 
         private FM_Client_GUI _gui;
         private Connection_Form _conForm;
+        private GetReady_Form _readyForm;
+        private Waiting_Form _waitingForm;
 
         private TcpClient _serverConnection;
         private SslStream _sslServerConnection;
@@ -121,7 +123,7 @@ namespace FasterMindC
                                 HandleDisconnectPacket(packet);
                                 break;
                             case "Ready":
-                                HandleReadyPacket(packet);
+                                HandleReadyPacket();
                                 break;
                             case "GameLost":
                                 HandleGameLostPacket(packet);
@@ -252,11 +254,22 @@ namespace FasterMindC
                     break;
             }
         }
-
-        private void HandleReadyPacket(FM_Packet packet)
+        
+        private delegate void HandleReadyPacketDel();
+        private void HandleReadyPacket()
         {
-            //TODO make both clients start at the same time
-            MessageBox.Show("START!");
+            if (_gui.InvokeRequired)
+            {
+                HandleReadyPacketDel d = new HandleReadyPacketDel(HandleReadyPacket);
+                _gui.Invoke(d);
+            }
+            else
+            {
+                _waitingForm.Close();
+                _gui.Enabled = true;
+                _readyForm = new GetReady_Form();
+                _readyForm.ShowDialog();
+            }
         }
 
         private void HandleDisconnectPacket(FM_Packet packet)
@@ -338,16 +351,27 @@ namespace FasterMindC
             {
                 if (_firstSubmit)
                 {
-                    if (!("" + _ownCode).Contains("0"))
+                    if (_name == null)
                     {
-                        SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
-                        _firstSubmit = false;
-                        _gui.MoveCode(true, _attempt);
+                        MessageBox.Show("Please fill in a name first");
                     }
                     else
                     {
-                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
+                        if (!("" + _ownCode).Contains("0"))
+                        {
+                            SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
+                            _firstSubmit = false;
+                            _gui.MoveCode(true, _attempt);
+                            _gui.Enabled = false;
+                            _waitingForm = new Waiting_Form();
+                            _waitingForm.Show();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
+                        }
                     }
+
                 }
                 else
                 {
