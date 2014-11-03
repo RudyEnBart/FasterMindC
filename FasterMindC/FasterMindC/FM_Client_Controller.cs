@@ -385,7 +385,7 @@ namespace FasterMindC
                     {
                         if (!("" + _ownCode).Contains("0"))
                         {
-                            Console.WriteLine("Initial code is: " + _ownCode);
+                            //Console.WriteLine("Initial code is: " + _ownCode);
                             SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                             _firstSubmit = false;
                             _gui.MoveCode(true, _attempt);

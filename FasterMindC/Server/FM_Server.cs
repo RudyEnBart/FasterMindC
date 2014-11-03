@@ -143,7 +143,7 @@ namespace Server
         {
             _mostWins = (short)DataHandling.ReadData(DataHandling.MOSTWINS);
             _mostWinsName = (string)DataHandling.ReadData(DataHandling.MOSTWINSNAME);
-            Console.WriteLine("MOST WINS: " + _mostWins + " by " + _mostWinsName);
+            //Console.WriteLine("MOST WINS: " + _mostWins + " by " + _mostWinsName);
             _fastestTimes = (long[])DataHandling.ReadData(DataHandling.BESTTIMES);
             _fastestTimesNames = (string[])DataHandling.ReadData(DataHandling.BESTTIMESNAMES);
         }
@@ -156,7 +156,7 @@ namespace Server
 
         private void HandleHighscoresPacket(FM_Packet packet)
         {
-            Console.WriteLine("fastest times are: " + _fastestTimes.ToString());
+            //Console.WriteLine("fastest times are: " + _fastestTimes.ToString());
             string highscores = "Current fastest times are: \n";
             for (int i = 0; i < _fastestTimes.Length; i++ )
             {
@@ -172,7 +172,7 @@ namespace Server
             }
             highscores += "\nCurrent most wins recordholder is:    '" + _mostWinsName + "'    with    " + _mostWins + " wins";
                 
-            Console.WriteLine(highscores);
+            //Console.WriteLine(highscores);
             SendPacket(new FM_Packet(packet._id, "Highscores", highscores));
         }
 
@@ -193,7 +193,7 @@ namespace Server
 
         private void HandleDisconnectPacket(FM_Packet packet)
         {
-            Console.WriteLine("Player with ID " + packet._id + " has disconnected");
+            //Console.WriteLine("Player with ID " + packet._id + " has disconnected");
             _playerCount--;
             _names[Int16.Parse(packet._id)] = "Anonymous";
             _wins[Int16.Parse(packet._id)] = 0;
@@ -226,10 +226,10 @@ namespace Server
         {
             int result = 0;
             int OpponentID = CheckID(packet);
-            Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
+            //Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
             //int timesWhileloopfinished = 0;
             string tempOpponentCode = _playerCodes[OpponentID];
-            Console.WriteLine("tempcode is: " + tempOpponentCode + "and playercode is: " + _playerCodes[OpponentID]);
+            //Console.WriteLine("tempcode is: " + tempOpponentCode + "and playercode is: " + _playerCodes[OpponentID]);
             string checkCode = packet._message;
             StringBuilder sbOppCode = new StringBuilder(tempOpponentCode);
             StringBuilder sbCheckCode = new StringBuilder(checkCode);
@@ -245,14 +245,14 @@ namespace Server
                     checkCode = sbCheckCode.ToString();
                     result += 10;
                 }
-                Console.WriteLine("Result has changed to: " + result);
-                Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
+                //Console.WriteLine("Result has changed to: " + result);
+                //Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
             }
             for (int i = 0; i < tempOpponentCode.Length; i++)
             {
                 if (tempOpponentCode.Contains(checkCode.Substring(i, 1)))
                 {
-                    Console.WriteLine("+1!");
+                    //Console.WriteLine("+1!");
                     int index = tempOpponentCode.IndexOf(checkCode.Substring(i, 1));
                     sbOppCode[index] = 'x';
                     tempOpponentCode = sbOppCode.ToString();
@@ -260,8 +260,8 @@ namespace Server
                     checkCode = sbCheckCode.ToString();
                     result += 1;
                 }
-                Console.WriteLine("Result has changed to: " + result);
-                Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
+                //Console.WriteLine("Result has changed to: " + result);
+                //Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
             }
 
             if (result == 40)
@@ -275,7 +275,7 @@ namespace Server
                 string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}", ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
                 Console.WriteLine("RunTime " + elapsedTime);
                 */
-                Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
+                //Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
                 SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
                 SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
                 _playerCodes = new string[MAX_PLAYERS];
@@ -292,27 +292,27 @@ namespace Server
                 _wins[Byte.Parse(packet._id)]++;
                 if (_wins[winID] > _mostWins)
                 {
-                    Console.WriteLine("New record wins!");
+                    //Console.WriteLine("New record wins!");
                     _mostWins = _wins[winID];
                     _mostWinsName = _names[winID];
                     highscoresChanged = true;
                 }
                 for (int i = 0; i < _fastestTimes.Length; i++)
                 {
-                    Console.WriteLine("i: " + i);
-                    Console.WriteLine("Comparing: " + totalTicksGameTime + " with " + _fastestTimes[i]);
+                    //Console.WriteLine("i: " + i);
+                    //Console.WriteLine("Comparing: " + totalTicksGameTime + " with " + _fastestTimes[i]);
                     if(totalTicksGameTime < _fastestTimes[i])
                     {
                         highscoresChanged = true;
-                        Console.WriteLine("New record time!");
+                        //Console.WriteLine("New record time!");
                         for (int j = 9; j > i; j--)
                         {
-                            Console.WriteLine("replacing " + _fastestTimes[j] + " with " + _fastestTimes[j - 1]);
+                            //Console.WriteLine("replacing " + _fastestTimes[j] + " with " + _fastestTimes[j - 1]);
                             _fastestTimes[j] = _fastestTimes[j - 1];
-                            Console.WriteLine("replacing " + _fastestTimesNames[j] + " with " + _fastestTimesNames[j - 1]);
+                            //Console.WriteLine("replacing " + _fastestTimesNames[j] + " with " + _fastestTimesNames[j - 1]);
                             _fastestTimesNames[j] = _fastestTimesNames[j - 1];
                         }
-                        Console.WriteLine("replacing " + _fastestTimes[i] + " with " + totalTicksGameTime);
+                        //Console.WriteLine("replacing " + _fastestTimes[i] + " with " + totalTicksGameTime);
                         _fastestTimes[i] = totalTicksGameTime;
                         _fastestTimesNames[i] = _names[Byte.Parse(packet._id)];
                         SaveTimes(_fastestTimes, _fastestTimesNames);
@@ -381,7 +381,7 @@ namespace Server
 
         private string FormatTime(long milliseconds)
         {
-            Console.WriteLine("transforming " + milliseconds);
+            //Console.WriteLine("transforming " + milliseconds);
             TimeSpan t = TimeSpan.FromMilliseconds(milliseconds);
             string answer = string.Format("{0:D2}:{1:D2}:{2:D3}",
                                     t.Minutes,
@@ -392,7 +392,7 @@ namespace Server
 
         private void HandleInitialCodePacket(FM_Packet packet)
         {
-            Console.WriteLine("Received code: " + packet._message + " from player " + packet._id);
+            //Console.WriteLine("Received code: " + packet._message + " from player " + packet._id);
             _playerCodes[int.Parse(packet._id)] = packet._message;
             if (_playerCodes.Count(s => s != null) == MAX_PLAYERS)
             {

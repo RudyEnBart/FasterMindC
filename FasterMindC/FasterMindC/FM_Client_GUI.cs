@@ -73,7 +73,7 @@ namespace FasterMindC
             {
                 code1 = 0;
             }
-            Console.WriteLine("Changing code1 to : " + code1);
+            //Console.WriteLine("Changing code1 to : " + code1);
             this._input1.BackColor = ENUMS.GetColor((ENUMS.color)code1);
             _controller.InputCodeClicked(sender, e, 1);
         }
@@ -85,7 +85,7 @@ namespace FasterMindC
             {
                 code2 = 0;
             }
-            Console.WriteLine("Changing code1 to : " + code1);
+            //Console.WriteLine("Changing code1 to : " + code1);
             this._input2.BackColor = ENUMS.GetColor((ENUMS.color)code2);
             _controller.InputCodeClicked(sender, e, 2);
         }
@@ -97,7 +97,7 @@ namespace FasterMindC
             {
                 code3 = 0;
             }
-            Console.WriteLine("Changing code3 to : " + code3);
+            //Console.WriteLine("Changing code3 to : " + code3);
             this._input3.BackColor = ENUMS.GetColor((ENUMS.color)code3);
             _controller.InputCodeClicked(sender, e, 3);
         }
@@ -109,7 +109,7 @@ namespace FasterMindC
             {
                 code4 = 0;
             }
-            Console.WriteLine("Changing code4 to : " + code4);
+            //Console.WriteLine("Changing code4 to : " + code4);
             this._input4.BackColor = ENUMS.GetColor((ENUMS.color)code4);
             _controller.InputCodeClicked(sender, e, 4);
         }
@@ -155,7 +155,7 @@ namespace FasterMindC
 
         private void ResetCodes()
         {
-            Console.WriteLine("Codes reset!");
+            //Console.WriteLine("Codes reset!");
             code1 = 6;
             code2 = 6;
             code3 = 6;
