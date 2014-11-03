@@ -1,29 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FMNetworkLibrary
 {
     public class DataHandling
     {
-        private static long DEFAULTTIME = 10 * 60 * 1000;
-        private static string DEFAULTNAME = "Anonymous";
         public const byte MOSTWINS = 0;
         public const byte MOSTWINSNAME = 1;
         public const byte BESTTIMES = 2;
         public const byte BESTTIMESNAMES = 3;
         public const long DEFAULTMOSTWINS = 0;
         public const string DEFAULTMOSTWINSNAME = "Anonymous";
-        public static long[] DEFAULTBESTTIMES = { DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME
-                                                      , DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME};
-        public static string[] DEFAULTBESTTIMESNAMES = { DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME 
-                                                             , DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME};
+
         private const string _dir = @"Highscores\";
         private const string _fileExtension = ".dat";
         private const string _fileName = "Highscores";
+        private static long DEFAULTTIME = 10*60*1000;
+        private static string DEFAULTNAME = "Anonymous";
+
+        public static long[] DEFAULTBESTTIMES =
+        {
+            DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME, DEFAULTTIME
+        };
+
+        public static string[] DEFAULTBESTTIMESNAMES =
+        {
+            DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME, DEFAULTNAME
+        };
+
         public static void SaveData(long score, string name)
         {
             string[] data = File.ReadAllLines(Path.Combine(_dir, _fileName + _fileExtension));
@@ -35,7 +39,7 @@ namespace FMNetworkLibrary
         public static void SaveData(long[] scores, string[] names)
         {
             string[] data = File.ReadAllLines(Path.Combine(_dir, _fileName + _fileExtension));
-            for (int i = 0; i < scores.Length; i++ )
+            for (int i = 0; i < scores.Length; i++)
             {
                 data[2 + i] = "" + scores[i];
                 data[12 + i] = names[i];
@@ -60,7 +64,8 @@ namespace FMNetworkLibrary
                     for (int i = 0; i < DEFAULTBESTTIMES.Length; i++)
                     {
                         sw.WriteLine(DEFAULTBESTTIMES[i]);
-                    } for (int i = 0; i < DEFAULTBESTTIMESNAMES.Length; i++)
+                    }
+                    for (int i = 0; i < DEFAULTBESTTIMESNAMES.Length; i++)
                     {
                         sw.WriteLine(DEFAULTBESTTIMESNAMES[i]);
                     }
@@ -84,17 +89,19 @@ namespace FMNetworkLibrary
                     return null;
             }
         }
+
         private static string[] SubArray(string[] data, int index, int length)
         {
             string[] result = new string[length];
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+
         private static long[] StringArrayToLongArray(string[] data)
         {
             long[] result = new long[data.Length];
             byte index = 0;
-            foreach(string s in data)
+            foreach (string s in data)
             {
                 result[index] = long.Parse(s);
                 index++;

@@ -133,19 +133,6 @@ namespace FasterMindC
                 this._myPanels[8 + (attempt * 4) + 3].BackColor = this._input4.BackColor;
 
                 ResetCodes();
-
-                /*switch(attempt)
-                {
-                    case 1:
-                        this._code1_1.BackColor = this._input1.BackColor;
-                        this._code1_2.BackColor = this._input2.BackColor;
-                        this._code1_3.BackColor = this._input3.BackColor;
-                        this._code1_4.BackColor = this._input4.BackColor;
-                        break;
-                    default:
-                        break;
-
-                }*/
             }
             this._input1.BackColor = ENUMS.GetColor(ENUMS.color.WHITE);
             this._input2.BackColor = ENUMS.GetColor(ENUMS.color.WHITE);

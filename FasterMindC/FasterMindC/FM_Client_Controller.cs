@@ -1,9 +1,5 @@
-﻿using FMNetworkLibrary;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -11,57 +7,40 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using System.Windows.Forms;
+using FMNetworkLibrary;
 
 namespace FasterMindC
 {
     public class FM_Client_Controller
     {
-
-        private string _name { get; set; }
-        private int _ownCode { get; set; }
-        private int _submitCode { get; set; }
-        private bool _firstSubmit { get; set; }
-        private byte _attempt { get; set; }
         private string _ID;
 
-        private FM_Client_GUI _gui;
         private Connection_Form _conForm;
-        private GetReady_Form _readyForm;
-        private Waiting_Form _waitingForm;
-
-        private TcpClient _serverConnection;
-        private SslStream _sslServerConnection;
-        private StreamReader _reader;
-        private BinaryFormatter formatter = new BinaryFormatter();
+        private FM_Client_GUI _gui;
+        private int _opTry;
         private string _opponentCode;
         private string _opponentName;
+        private StreamReader _reader;
+        private GetReady_Form _readyForm;
+        private TcpClient _serverConnection;
 
         private string _serverIP = FM_Settings.SERVERIP;
         private byte _serverPort = FM_Settings.SERVERPORT;
-        private int _opTry;
-
-        static void Main()
-        {
-            FM_Client_Controller control = new FM_Client_Controller();
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            control.init();
-            Application.Run(control._gui); 
-        }
+        private SslStream _sslServerConnection;
+        private Waiting_Form _waitingForm;
+        private BinaryFormatter formatter = new BinaryFormatter();
 
         public FM_Client_Controller()
         {
-            Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
+            Application.ApplicationExit += OnApplicationExit;
             try
             {
                 _serverConnection = new TcpClient();
                 _serverConnection.Connect(_serverIP, _serverPort);
                 _sslServerConnection = new SslStream(_serverConnection.GetStream(), false,
-                    new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    ValidateServerCertificate, null);
                 try
                 {
                     _sslServerConnection.AuthenticateAsClient(_serverIP, null, SslProtocols.Tls, false);
@@ -87,7 +66,6 @@ namespace FasterMindC
             }
             new Thread(() =>
             {
-
                 while (true)
                 {
                     String dataString = "";
@@ -95,12 +73,12 @@ namespace FasterMindC
 
                     if (_serverConnection.Connected)
                     {
-                        dataString = (String)formatter.Deserialize(_sslServerConnection);
+                        dataString = (String) formatter.Deserialize(_sslServerConnection);
                         packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
                         switch (packet._type)
                         {
-                            //sender = incoming client
-                            //packet = data van de client
+                                //sender = incoming client
+                                //packet = data van de client
                             case "ID":
                                 HandleIDPacket(packet);
                                 break;
@@ -139,6 +117,21 @@ namespace FasterMindC
             }).Start();
         }
 
+        private string _name { get; set; }
+        private int _ownCode { get; set; }
+        private int _submitCode { get; set; }
+        private bool _firstSubmit { get; set; }
+        private byte _attempt { get; set; }
+
+        private static void Main()
+        {
+            FM_Client_Controller control = new FM_Client_Controller();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            control.init();
+            Application.Run(control._gui);
+        }
+
         private void HandleHighscoresPacket(FM_Packet packet)
         {
             MessageBox.Show(packet._message);
@@ -147,7 +140,8 @@ namespace FasterMindC
         private void HandleGameTiePacket(FM_Packet packet)
         {
             _gui.Enabled = false;
-            DialogResult result = MessageBox.Show("The game has ended in a tie... \nDo you wish to play again?", "Tie", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("The game has ended in a tie... \nDo you wish to play again?", "Tie",
+                MessageBoxButtons.YesNo);
             switch (result)
             {
                 case DialogResult.Yes:
@@ -170,16 +164,15 @@ namespace FasterMindC
             SendConnectPacket();
         }
 
-        delegate void InitGUIDel();
         private void InitializeGUI()
         {
             if (_gui == null)
             {
                 _gui = new FM_Client_GUI(this);
             }
-            if(_gui.InvokeRequired)
+            if (_gui.InvokeRequired)
             {
-                InitGUIDel d = new InitGUIDel(InitializeGUI);
+                InitGUIDel d = InitializeGUI;
                 _gui.Invoke(d);
             }
             else
@@ -192,13 +185,11 @@ namespace FasterMindC
             }
         }
 
-        delegate void HandleConnectPacketDel();
-
         private void HandleConnectPacket()
         {
             if (_conForm.InvokeRequired)
             {
-                HandleConnectPacketDel d = new HandleConnectPacketDel(HandleConnectPacket);
+                HandleConnectPacketDel d = HandleConnectPacket;
                 _conForm.Invoke(d);
             }
             else
@@ -207,29 +198,28 @@ namespace FasterMindC
                 _gui.Enabled = true;
                 _gui.Focus();
                 MessageBox.Show("The goal of the game is to guess the code of your opponent.\n" +
-                "By clicking the squares at the bottom, they will change colors to signify a code.\n" +
-                "The first code you submit will be the code your opponent needs to guess.\n" +
-                "After that, every code you submit will be a guess towards your opponent's code.\n" +
-                "Your guesses will be on the left side and your opponent's guesses on the right.\n" +
-                "Next to your guesses you will also see how many of your colors were:\n" +
-                "- The right color and in the right spot (RED).\n" +
-                "- The right color but in the wrong spot (WHITE).\n\n" +
-                "The colors that can make up a code are: Red, Blue, Green, Yellow, Pink and Cyan.\n" +
-                "White counts as an empty space and is not an allowed color within the codes.\n" +
-                "The first player to guess the opponent's code within the 9 guesses, WINS!\n" +
-                "Be the fastest and smartest. Prove that you have the... FASTERMIND!",
-                "Welcome to... FASTERMIND!");
+                                "By clicking the squares at the bottom, they will change colors to signify a code.\n" +
+                                "The first code you submit will be the code your opponent needs to guess.\n" +
+                                "After that, every code you submit will be a guess towards your opponent's code.\n" +
+                                "Your guesses will be on the left side and your opponent's guesses on the right.\n" +
+                                "Next to your guesses you will also see how many of your colors were:\n" +
+                                "- The right color and in the right spot (RED).\n" +
+                                "- The right color but in the wrong spot (WHITE).\n\n" +
+                                "The colors that can make up a code are: Red, Blue, Green, Yellow, Pink and Cyan.\n" +
+                                "White counts as an empty space and is not an allowed color within the codes.\n" +
+                                "The first player to guess the opponent's code within the 9 guesses, WINS!\n" +
+                                "Be the fastest and smartest. Prove that you have the... FASTERMIND!",
+                                "Welcome to... FASTERMIND!");
                 _gui.Focus();
             }
         }
 
-        private delegate void HandleCodeResultPacketDel(FM_Packet packet);
         private void HandleCodeResultPacket(FM_Packet packet)
         {
             if (_gui.InvokeRequired)
             {
-                HandleCodeResultPacketDel d = new HandleCodeResultPacketDel(HandleCodeResultPacket);
-                _gui.Invoke(d, new object[]{packet});
+                HandleCodeResultPacketDel d = HandleCodeResultPacket;
+                _gui.Invoke(d, new object[] {packet});
             }
             else
             {
@@ -257,13 +247,12 @@ namespace FasterMindC
             }
         }
 
-        private delegate void HandleGameLostPacketDel(FM_Packet packet);
         private void HandleGameLostPacket(FM_Packet packet)
         {
             if (_gui.InvokeRequired)
             {
-                HandleGameLostPacketDel d = new HandleGameLostPacketDel(HandleGameLostPacket);
-                _gui.Invoke(d, new object[] { packet });
+                HandleGameLostPacketDel d = HandleGameLostPacket;
+                _gui.Invoke(d, new object[] {packet});
             }
             else
             {
@@ -280,13 +269,12 @@ namespace FasterMindC
                 }
             }
         }
-        
-        private delegate void HandleReadyPacketDel();
+
         private void HandleReadyPacket()
         {
             if (_gui.InvokeRequired)
             {
-                HandleReadyPacketDel d = new HandleReadyPacketDel(HandleReadyPacket);
+                HandleReadyPacketDel d = HandleReadyPacket;
                 _gui.Invoke(d);
             }
             else
@@ -319,7 +307,7 @@ namespace FasterMindC
 
         private void HandleIDPacket(FM_Packet packet)
         {
-            this._ID = packet._message;
+            _ID = packet._message;
             Console.WriteLine("ID REGISTERED: " + _ID);
         }
 
@@ -341,7 +329,7 @@ namespace FasterMindC
 
         public void NameButtonClick(object sender, EventArgs e, string name)
         {
-            this._name = name;
+            _name = name;
             SendPacket(new FM_Packet(_ID, "NameChange", name));
         }
 
@@ -349,24 +337,24 @@ namespace FasterMindC
         {
             if (_firstSubmit)
             {
-                if ((int)(_ownCode / Math.Pow(10, p - 1)) % 10 == 6)
+                if ((int) (_ownCode/Math.Pow(10, p - 1))%10 == 6)
                 {
-                    _ownCode -= (short)(5 * Math.Pow(10, p - 1));
+                    _ownCode -= (short) (5*Math.Pow(10, p - 1));
                 }
                 else
                 {
-                    _ownCode += (short)(Math.Pow(10, p - 1));
+                    _ownCode += (short) (Math.Pow(10, p - 1));
                 }
             }
             else
             {
-                if ((int)(_submitCode / Math.Pow(10, p - 1)) % 10 == 6)
+                if ((int) (_submitCode/Math.Pow(10, p - 1))%10 == 6)
                 {
-                    _submitCode -= (short)(5 * Math.Pow(10, p - 1));
+                    _submitCode -= (short) (5*Math.Pow(10, p - 1));
                 }
                 else
                 {
-                    _submitCode += (short)(Math.Pow(10, p - 1));
+                    _submitCode += (short) (Math.Pow(10, p - 1));
                 }
             }
         }
@@ -396,10 +384,10 @@ namespace FasterMindC
                         }
                         else
                         {
-                            MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
+                            MessageBox.Show(
+                                "Please fill in all the colors before submitting (white is not counted as a color)");
                         }
                     }
-
                 }
                 else
                 {
@@ -413,7 +401,8 @@ namespace FasterMindC
                     }
                     else
                     {
-                        MessageBox.Show("Please fill in all the colors before submitting (white is not counted as a color)");
+                        MessageBox.Show(
+                            "Please fill in all the colors before submitting (white is not counted as a color)");
                     }
                 }
             }
@@ -423,9 +412,20 @@ namespace FasterMindC
         {
             SendPacket(new FM_Packet(_ID, "Highscores", "Request for highscores"));
         }
+
         private void OnApplicationExit(object sender, EventArgs e)
         {
             SendPacket(new FM_Packet(_ID, "Disconnect", "Disconnecting"));
         }
+
+        private delegate void HandleCodeResultPacketDel(FM_Packet packet);
+
+        private delegate void HandleConnectPacketDel();
+
+        private delegate void HandleGameLostPacketDel(FM_Packet packet);
+
+        private delegate void HandleReadyPacketDel();
+
+        private delegate void InitGUIDel();
     }
 }

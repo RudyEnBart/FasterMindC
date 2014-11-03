@@ -1,48 +1,40 @@
-﻿using System.Collections;
+﻿using System;
 using System.Diagnostics;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms.VisualStyles;
-using FMNetworkLibrary;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
-using System.Windows.Forms;
-using System.Web.Script.Serialization;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
+using System.Web.Script.Serialization;
+using FMNetworkLibrary;
 
 namespace Server
 {
-    class FM_Server
+    internal class FM_Server
     {
         private const byte MAX_PLAYERS = 2;
 
-        private string[] _playerCodes = new string[MAX_PLAYERS];
-        private SslStream[] streamArray = new SslStream[MAX_PLAYERS];
-        private short _playerCount = 0;
-        private BinaryFormatter formatter = new BinaryFormatter();
-        private byte _connectPackages = 0;
-        private DateTime _timeStart;
-        private DateTime _timeEnd;
-        private string _highscoreTimeName = "No one";
-        private long _highscoreTime = 10*60*1000;
-        private string _mostWinsName = "Anonymous";
-        private short _mostWins = 0;
-        private string[] _names = {"Anonymous", "Anonymous"};
-        private short[] _wins = {0,0};
-        private Stopwatch _stopWatch = new Stopwatch();
-        private long[] _fastestTimes =  new long[10];
+        private byte _connectPackages;
+        private long[] _fastestTimes = new long[10];
         private string[] _fastestTimesNames = new string[10];
+        private long _highscoreTime = 10*60*1000;
+        private string _highscoreTimeName = "No one";
+        private short _mostWins;
+        private string _mostWinsName = "Anonymous";
+        private string[] _names = {"Anonymous", "Anonymous"};
+        private string[] _playerCodes = new string[MAX_PLAYERS];
+        private short _playerCount;
         private String[] _playerNames = new String[MAX_PLAYERS];
-        static void Main()
-        {
-            new FM_Server();
-        }
+        private Stopwatch _stopWatch = new Stopwatch();
+        private DateTime _timeEnd;
+        private DateTime _timeStart;
+        private short[] _wins = {0, 0};
+        private BinaryFormatter formatter = new BinaryFormatter();
+        private SslStream[] streamArray = new SslStream[MAX_PLAYERS];
 
         public FM_Server()
         {
@@ -53,12 +45,11 @@ namespace Server
                 X509Certificate2 _certificate = new X509Certificate2("C:\\certs\\testpfx.pfx", "FIETSA3");
                 IPAddress _localIP = IPAddress.Parse("127.0.0.1");
                 byte port = FM_Settings.SERVERPORT;
-                _server = new TcpListener(/*_localIP,*/ port);
+                _server = new TcpListener( /*_localIP,*/ port);
                 _server.Start();
                 Console.WriteLine("Waiting for connection...");
                 while (true)
                 {
-
                     TcpClient _clientConnection = _server.AcceptTcpClient();
 
                     new Thread(() =>
@@ -95,12 +86,12 @@ namespace Server
                                 FM_Packet packet = null;
                                 if (_clientConnection.Connected)
                                 {
-                                    dataString = (String)formatter.Deserialize(sslStream);
+                                    dataString = (String) formatter.Deserialize(sslStream);
                                     packet = new JavaScriptSerializer().Deserialize<FM_Packet>(dataString);
                                     switch (packet._type)
                                     {
-                                        //sender = incoming client
-                                        //packet = data van de client
+                                            //sender = incoming client
+                                            //packet = data van de client
                                         case "Connect":
                                             HandleConnectPacket(packet);
                                             break;
@@ -136,16 +127,20 @@ namespace Server
             {
                 _server.Stop();
             }
+        }
 
+        private static void Main()
+        {
+            new FM_Server();
         }
 
         private void GetHighscores()
         {
-            _mostWins = (short)DataHandling.ReadData(DataHandling.MOSTWINS);
-            _mostWinsName = (string)DataHandling.ReadData(DataHandling.MOSTWINSNAME);
+            _mostWins = (short) DataHandling.ReadData(DataHandling.MOSTWINS);
+            _mostWinsName = (string) DataHandling.ReadData(DataHandling.MOSTWINSNAME);
             //Console.WriteLine("MOST WINS: " + _mostWins + " by " + _mostWinsName);
-            _fastestTimes = (long[])DataHandling.ReadData(DataHandling.BESTTIMES);
-            _fastestTimesNames = (string[])DataHandling.ReadData(DataHandling.BESTTIMESNAMES);
+            _fastestTimes = (long[]) DataHandling.ReadData(DataHandling.BESTTIMES);
+            _fastestTimesNames = (string[]) DataHandling.ReadData(DataHandling.BESTTIMESNAMES);
         }
 
         private void SetHighscores()
@@ -158,20 +153,22 @@ namespace Server
         {
             //Console.WriteLine("fastest times are: " + _fastestTimes.ToString());
             string highscores = "Current fastest times are: \n";
-            for (int i = 0; i < _fastestTimes.Length; i++ )
+            for (int i = 0; i < _fastestTimes.Length; i++)
             {
-                if(i == 9)
+                if (i == 9)
                 {
-                    highscores += (i + 1) + ".  '" + _fastestTimesNames[i] + "'    with    " + FormatTime(_fastestTimes[i]) + "\n";
+                    highscores += (i + 1) + ".  '" + _fastestTimesNames[i] + "'    with    " +
+                                  FormatTime(_fastestTimes[i]) + "\n";
                 }
                 else
                 {
-                    highscores += (i + 1) + ".    '" + _fastestTimesNames[i] + "'    with    " + FormatTime(_fastestTimes[i]) + "\n";
+                    highscores += (i + 1) + ".    '" + _fastestTimesNames[i] + "'    with    " +
+                                  FormatTime(_fastestTimes[i]) + "\n";
                 }
-
             }
-            highscores += "\nCurrent most wins recordholder is:    '" + _mostWinsName + "'    with    " + _mostWins + " wins";
-                
+            highscores += "\nCurrent most wins recordholder is:    '" + _mostWinsName + "'    with    " + _mostWins +
+                          " wins";
+
             //Console.WriteLine(highscores);
             SendPacket(new FM_Packet(packet._id, "Highscores", highscores));
         }
@@ -207,7 +204,7 @@ namespace Server
         {
             int OpponentID = CheckID(packet);
             _names[Byte.Parse(packet._id)] = packet._message;
-            if(packet._message == _mostWinsName)
+            if (packet._message == _mostWinsName)
             {
                 _wins[Byte.Parse(packet._id)] = _mostWins;
             }
@@ -227,7 +224,6 @@ namespace Server
             int result = 0;
             int OpponentID = CheckID(packet);
             //Console.WriteLine("code to check: " + packet._message + " - code to check against: " + _playerCodes[OpponentID]);
-            //int timesWhileloopfinished = 0;
             string tempOpponentCode = _playerCodes[OpponentID];
             //Console.WriteLine("tempcode is: " + tempOpponentCode + "and playercode is: " + _playerCodes[OpponentID]);
             string checkCode = packet._message;
@@ -278,26 +274,13 @@ namespace Server
             {
                 _timeEnd = DateTime.Now;
                 bool highscoresChanged = false;
-                
-                /*_stopWatch.Stop();
-                TimeSpan ts = _stopWatch.Elapsed;
-                ts.Add(new TimeSpan(0, 0, -3));
-                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}", ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
-                Console.WriteLine("RunTime " + elapsedTime);
-                */
                 //Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
                 SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
-                SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
+                SendPacket(new FM_Packet(OpponentID + "", "GameLost",
+                    "Your opponent guessed your code!\nSadly, you have lost."));
                 _playerCodes = new string[MAX_PLAYERS];
 
-                long totalTicksGameTime = ((_timeEnd.Ticks - _timeStart.Ticks) / TimeSpan.TicksPerMillisecond) - 3000;
-                /*if(totalTicksGameTime < _highscoreTime)
-                {
-                    Console.WriteLine("New fastest time! Old fastest time was: " + FormatTime(_highscoreTime) + " - New fastest time is: " + FormatTime(totalTicksGameTime));
-                    _highscoreTime = totalTicksGameTime;
-                    _highscoreTimeName = _names[Byte.Parse(packet._id)];
-                }
-                */
+                long totalTicksGameTime = ((_timeEnd.Ticks - _timeStart.Ticks)/TimeSpan.TicksPerMillisecond) - 3000;
                 byte winID = Byte.Parse(packet._id);
                 _wins[Byte.Parse(packet._id)]++;
                 if (_wins[winID] > _mostWins)
@@ -311,7 +294,7 @@ namespace Server
                 {
                     //Console.WriteLine("i: " + i);
                     //Console.WriteLine("Comparing: " + totalTicksGameTime + " with " + _fastestTimes[i]);
-                    if(totalTicksGameTime < _fastestTimes[i])
+                    if (totalTicksGameTime < _fastestTimes[i])
                     {
                         highscoresChanged = true;
                         //Console.WriteLine("New record time!");
@@ -333,41 +316,6 @@ namespace Server
                 {
                     SetHighscores();
                 }
-                /*
-                if (fastestArrayList.Count != 0)
-                {
-                    bool added = false;
-                    Console.WriteLine("Going to compare");
-                    int i = 0;
-                    foreach(TimeSpan t in fastestArrayList)
-                    {
-                        Console.WriteLine("Entered for each");
-                        if (ts.CompareTo(t) == -1)
-                        {
-                            fastestArrayList.Insert(i,ts);
-                            fastestStringArrayList.Insert(i, _playerNames[int.Parse(packet._id)] + "    " + ts);
-                            Console.WriteLine(fastestStringArrayList);
-                            added = true;
-                            break;
-                        }
-                        i++;
-                    }
-                    if (added == false)
-                    {
-                        fastestArrayList.Add(ts);
-                        fastestStringArrayList.Add(_playerNames[int.Parse(packet._id)] + "    " + ts);
-                        Console.WriteLine(fastestStringArrayList[0]);
-                        Console.WriteLine(fastestStringArrayList[1]); 
-
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Adding to array first time");
-                    fastestArrayList.Add(ts);
-                    fastestStringArrayList.Add(_playerNames[int.Parse(packet._id)] + "    " + ts);
-                }
-                */
             }
         }
 
@@ -381,9 +329,9 @@ namespace Server
             //Console.WriteLine("transforming " + milliseconds);
             TimeSpan t = TimeSpan.FromMilliseconds(milliseconds);
             string answer = string.Format("{0:D2}:{1:D2}:{2:D3}",
-                                    t.Minutes,
-                                    t.Seconds,
-                                    t.Milliseconds);
+                t.Minutes,
+                t.Seconds,
+                t.Milliseconds);
             return answer;
         }
 
@@ -396,7 +344,6 @@ namespace Server
                 foreach (SslStream s in streamArray)
                 {
                     SendPacket(new FM_Packet("Ready", "GET READY"), s);
-                    
                 }
                 _timeStart = DateTime.Now;
             }
