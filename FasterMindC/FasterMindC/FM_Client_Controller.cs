@@ -381,6 +381,7 @@ namespace FasterMindC
                     {
                         if (!("" + _ownCode).Contains("0"))
                         {
+                            Console.WriteLine("Initial code is: " + _ownCode);
                             SendPacket(new FM_Packet(_ID, "InitialCode", "" + _ownCode));
                             _firstSubmit = false;
                             _gui.MoveCode(true, _attempt);
@@ -399,6 +400,7 @@ namespace FasterMindC
                 {
                     if (!("" + _submitCode).Contains("0"))
                     {
+                        Console.WriteLine("Submit code is: " + _submitCode);
                         SendPacket(new FM_Packet(_ID, "CodeSubmit", "" + _submitCode));
                         _gui.MoveCode(false, _attempt);
                         _attempt++;

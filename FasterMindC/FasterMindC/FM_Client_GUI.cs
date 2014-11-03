@@ -151,6 +151,7 @@ namespace FasterMindC
 
         private void ResetCodes()
         {
+            Console.WriteLine("Codes reset!");
             code1 = 6;
             code2 = 6;
             code3 = 6;
