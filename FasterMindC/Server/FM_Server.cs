@@ -197,6 +197,10 @@ namespace Server
             _playerCount--;
             _names[Int16.Parse(packet._id)] = "Anonymous";
             _wins[Int16.Parse(packet._id)] = 0;
+            if (_connectPackages > _playerCount)
+            {
+                _connectPackages--;
+            }
         }
 
         private void HandleNameChangePacket(FM_Packet packet)

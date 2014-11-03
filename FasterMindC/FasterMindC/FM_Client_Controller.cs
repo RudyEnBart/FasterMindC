@@ -185,7 +185,7 @@ namespace FasterMindC
             else
             {
                 _conForm = new Connection_Form();
-                _conForm.Show();
+                _conForm.Show(_gui);
                 _conForm.TopMost = true;
                 _gui.Enabled = false;
                 _gui.init();
@@ -292,7 +292,7 @@ namespace FasterMindC
                 _waitingForm.Close();
                 _gui.Enabled = true;
                 _readyForm = new GetReady_Form();
-                _readyForm.ShowDialog();
+                _readyForm.ShowDialog(_gui);
             }
         }
 
