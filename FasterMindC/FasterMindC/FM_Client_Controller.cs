@@ -388,6 +388,7 @@ namespace FasterMindC
                             _gui.Enabled = false;
                             _waitingForm = new Waiting_Form();
                             _waitingForm.Show();
+                            _waitingForm.TopMost = true;
                         }
                         else
                         {
