@@ -1,5 +1,8 @@
-﻿using System.Security.Authentication;
+﻿using System.Collections;
+using System.Diagnostics;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Forms.VisualStyles;
 using FMNetworkLibrary;
 using System;
 using System.Collections.Generic;
@@ -24,6 +27,10 @@ namespace Server
         private short _playerCount = 0;
         private BinaryFormatter formatter = new BinaryFormatter();
         private byte _connectPackages = 0;
+        private Stopwatch _stopWatch = new Stopwatch();
+        private ArrayList fastestArrayList =  new ArrayList();
+        private ArrayList fastestStringArrayList = new ArrayList();
+        private String[] _playerNames = new String[MAX_PLAYERS];
         static void Main()
         {
             new FM_Server();
@@ -131,7 +138,7 @@ namespace Server
                 foreach (SslStream s in streamArray)
                 {
                     SendPacket(p, s);
-                } 
+                }
                 _connectPackages = 0;
             }
         }
@@ -145,6 +152,14 @@ namespace Server
         {
             int OpponentID = CheckID(packet);
             SendPacket(packet, streamArray[OpponentID]);
+            if (packet._id == "0")
+            {
+                _playerNames[0] = packet._message;
+            }
+            else
+            {
+                _playerNames[1] = packet._message;
+            }
         }
 
         private void HandleCodeSubmitPacket(FM_Packet packet)
@@ -159,7 +174,7 @@ namespace Server
             StringBuilder sbOppCode = new StringBuilder(tempOpponentCode);
             StringBuilder sbCheckCode = new StringBuilder(checkCode);
 
-            for (int i = 0; i < tempOpponentCode.Length; i++ )
+            for (int i = 0; i < tempOpponentCode.Length; i++)
             {
                 if (tempOpponentCode.Substring(i, 1).Equals(checkCode.Substring(i, 1)))
                 {
@@ -188,50 +203,63 @@ namespace Server
                 Console.WriteLine("Result has changed to: " + result);
                 Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
             }
-
-            /*
-                while (timesWhileloopfinished < tempOpponentCode.Length)
-                {
-                    Console.WriteLine("checking: " + tempOpponentCode.Substring(0, 1) + " against: " + checkCode.Substring(0, 1));
-                    if (tempOpponentCode.Substring(0, 1).Equals(checkCode.Substring(0, 1)))
-                    {
-                        Console.WriteLine("+10!");
-                        result += 10;
-                        tempOpponentCode = tempOpponentCode.Remove(0, 1);
-                        timesWhileloopfinished--;
-                    }
-                    else if (tempOpponentCode.Contains(checkCode.Substring(0, 1)))
-                    {
-                        Console.WriteLine("+1!");
-                        result += 1;
-                        tempOpponentCode = tempOpponentCode.Remove(0, 1);
-                        timesWhileloopfinished--;
-                        i--;
-                    }
-                    checkCode = checkCode.Remove(0, 1);
-                    timesWhileloopfinished++;
-                }*/
-
             if (result == 40)
             {
+                _stopWatch.Stop();
+                TimeSpan ts = _stopWatch.Elapsed;
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}", ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+                Console.WriteLine("RunTime " + elapsedTime);
                 Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
                 SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
                 SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
                 _playerCodes = new string[MAX_PLAYERS];
+                if (fastestArrayList.Count != 0)
+                {
+                    bool added = false;
+                    Console.WriteLine("Going to compare");
+                    int i = 0;
+                    foreach(TimeSpan t in fastestArrayList)
+                    {
+                        Console.WriteLine("Entered for each");
+                        if (ts.CompareTo(t) == -1)
+                        {
+                            fastestArrayList.Insert(i,ts);
+                            fastestStringArrayList.Insert(i, _playerNames[int.Parse(packet._id)] + "    " + ts);
+                            Console.WriteLine(fastestStringArrayList);
+                            added = true;
+                            break;
+                        }
+                        i++;
+                    }
+                    if (added == false)
+                    {
+                        fastestArrayList.Add(ts);
+                        fastestStringArrayList.Add(_playerNames[int.Parse(packet._id)] + "    " + ts);
+                        Console.WriteLine(fastestStringArrayList[0]);
+                        Console.WriteLine(fastestStringArrayList[1]); 
+
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Adding to array first time");
+                    fastestArrayList.Add(ts);
+                    fastestStringArrayList.Add(_playerNames[int.Parse(packet._id)] + "    " + ts);
+                }
             }
             else
             {
                 if (result < 10)
                 {
                     SendPacket(new FM_Packet(packet._id, "CodeResult", "0" + result));
-                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message)); 
+                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
                 }
                 else
                 {
                     SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
-                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message)); 
+                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
                 }
-            }          
+            }
         }
 
         private void HandleInitialCodePacket(FM_Packet packet)
@@ -243,7 +271,10 @@ namespace Server
                 foreach (SslStream s in streamArray)
                 {
                     SendPacket(new FM_Packet("Ready", "GET READY"), s);
+                    
                 }
+                Thread.Sleep(3000);
+                _stopWatch.Start();
             }
         }
 
