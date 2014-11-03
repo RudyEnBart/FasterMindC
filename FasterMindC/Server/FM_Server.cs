@@ -238,7 +238,7 @@ namespace Server
             {
                 if (tempOpponentCode.Substring(i, 1).Equals(checkCode.Substring(i, 1)))
                 {
-                    Console.WriteLine("+10!");
+                    //Console.WriteLine("+10!");
                     sbOppCode[i] = 'x';
                     tempOpponentCode = sbOppCode.ToString();
                     sbCheckCode[i] = 'y';
@@ -262,6 +262,16 @@ namespace Server
                 }
                 //Console.WriteLine("Result has changed to: " + result);
                 //Console.WriteLine("tempcodes are: " + tempOpponentCode + " and " + checkCode);
+            }
+            if (result < 10)
+            {
+                SendPacket(new FM_Packet(packet._id, "CodeResult", "0" + result));
+                SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
+            }
+            else
+            {
+                SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
+                SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
             }
 
             if (result == 40)
@@ -358,19 +368,6 @@ namespace Server
                     fastestStringArrayList.Add(_playerNames[int.Parse(packet._id)] + "    " + ts);
                 }
                 */
-            }
-            else
-            {
-                if (result < 10)
-                {
-                    SendPacket(new FM_Packet(packet._id, "CodeResult", "0" + result));
-                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
-                }
-                else
-                {
-                    SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
-                    SendPacket(new FM_Packet(OpponentID + "", "OpponentSubmit", packet._message));
-                }
             }
         }
 
