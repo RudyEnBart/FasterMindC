@@ -35,6 +35,7 @@ namespace Server
         private short[] _wins = {0, 0};
         private BinaryFormatter formatter = new BinaryFormatter();
         private SslStream[] streamArray = new SslStream[MAX_PLAYERS];
+        private byte _ties = 0;
 
         public FM_Server()
         {
@@ -110,6 +111,9 @@ namespace Server
                                         case "Highscores":
                                             HandleHighscoresPacket(packet);
                                             break;
+                                        case "GameTie":
+                                            HandleGameTiePacket(packet);
+                                            break;
                                         default: //nothing
                                             break;
                                     }
@@ -126,6 +130,20 @@ namespace Server
             finally
             {
                 _server.Stop();
+            }
+        }
+
+        private void HandleGameTiePacket(FM_Packet packet)
+        {
+            _ties++;
+            if (_ties == 2)
+            {
+                FM_Packet gameTie = new FM_Packet("GameTie", "Reset game.");
+                foreach (SslStream s in streamArray)
+                {
+                    SendPacket(gameTie,s);
+                }
+                _ties = 0;
             }
         }
 

@@ -243,6 +243,7 @@ namespace FasterMindC
                 {
                     _gui.Enabled = false;
                     MessageBox.Show("You failed to guess your opponents code :( \nWaiting for opponent to finish", "Waiting for opponent");
+                    SendPacket(new FM_Packet(_ID, "GameTie","Failed to guess within 9 attempts."));
                 }
             }
         }
