@@ -275,9 +275,7 @@ namespace Server
                 _timeEnd = DateTime.Now;
                 bool highscoresChanged = false;
                 //Console.WriteLine("OMG Player " + packet._id + " HAS WON THE GAME!");
-                SendPacket(new FM_Packet(packet._id, "CodeResult", result + ""));
-                SendPacket(new FM_Packet(OpponentID + "", "GameLost",
-                    "Your opponent guessed your code!\nSadly, you have lost."));
+                SendPacket(new FM_Packet(OpponentID + "", "GameLost", "Your opponent guessed your code!\nSadly, you have lost."));
                 _playerCodes = new string[MAX_PLAYERS];
 
                 long totalTicksGameTime = ((_timeEnd.Ticks - _timeStart.Ticks)/TimeSpan.TicksPerMillisecond) - 3000;
